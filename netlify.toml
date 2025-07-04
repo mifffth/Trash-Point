@@ -1,12 +1,2 @@
 [functions]
     directory = "netlify/functions"
-
-[dev]
-    publish = "dist"
-    targetPort = 9000
-    port = 8888
-    command = "npm run start-dev"
-
-[build]
-    publish = "dist"
-    command = "npm run build"
