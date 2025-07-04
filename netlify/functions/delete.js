@@ -1,0 +1,37 @@
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'DELETE') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ message: 'Method Not Allowed' }),
+    };
+  }
+
+  try {
+    const { publicId } = JSON.parse(event.body);
+
+    const result = await cloudinary.uploader.destroy(publicId);
+
+    if (result.result !== 'ok') {
+      throw new Error(`Cloudinary delete failed: ${result.result}`);
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'Image deleted successfully' }),
+    };
+  } catch (error) {
+    console.error('Cloudinary delete error:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Failed to delete image', error: error.message }),
+    };
+  }
+};

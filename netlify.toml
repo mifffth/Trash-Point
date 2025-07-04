@@ -1,0 +1,12 @@
+[functions]
+    directory = "/netlify/functions"
+
+[build]
+    base = "/"
+    publish = "/dist"
+    command = "npm run build"
+
+[contex.dev]
+    base = "/"
+    publish = "/dist"
+    command = "npm run build-dev"
