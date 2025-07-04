@@ -8,33 +8,24 @@ cloudinary.config({
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'DELETE') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ message: 'Method Not Allowed' }),
-    };
+    return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
-    console.log('[Delete Function] Body:', event.body);
-
     const { publicId } = JSON.parse(event.body);
 
     if (!publicId) {
-      console.error('[Delete Function] Missing publicId');
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: 'Missing publicId' }),
-      };
+      return { statusCode: 400, body: 'Missing publicId in request body' };
     }
 
-    console.log('[Delete Function] Attempting to delete:', publicId);
-
+    console.log('Attempting to delete publicId:', publicId); 
     const result = await cloudinary.uploader.destroy(publicId);
 
-    console.log('[Delete Function] Cloudinary result:', result);
+    console.log('Cloudinary deletion result:', JSON.stringify(result, null, 2));
 
     if (result.result !== 'ok') {
-      throw new Error(`Cloudinary delete failed: ${result.result}`);
+      console.error('Cloudinary delete failed:', result); 
+      throw new Error(`Cloudinary delete failed: ${result.result || 'Unknown error'}`);
     }
 
     return {
@@ -42,10 +33,10 @@ exports.handler = async (event) => {
       body: JSON.stringify({ message: 'Image deleted successfully' }),
     };
   } catch (error) {
-    console.error('[Delete Function] Error:', error);
+    console.error('Error deleting image:', error); 
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Failed to delete image', error: error.message }),
+      body: JSON.stringify({ error: `Failed to delete image: ${error.message}` }),
     };
   }
 };
