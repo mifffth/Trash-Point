@@ -80,7 +80,7 @@ export class PointAddPresenter {
     this.view.showLoadingOverlay('Mengunggah laporan...');
 
     try {
-      const { secureUrl, publicId } = await this.uploadToCloudinary(photo); // Use original photo for upload if preferred, or compressedPhoto. Ensure correct usage based on your actual requirement.
+      const { secureUrl, publicId } = await this.uploadToCloudinary(photo); 
 
       const description = formData.get('description');
       const type = formData.get('type');

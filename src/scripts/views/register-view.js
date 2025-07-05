@@ -114,7 +114,7 @@ export class RegisterView {
 
   showLoadingOverlay(text) {
     this.overlay = document.createElement('div');
-    this.overlay.className = 'overlay';
+    this.overlay.className = 'loading-overlay';
     this.overlay.textContent = text;
     document.body.appendChild(this.overlay);
     gsap.fromTo(this.overlay, { opacity: 0 }, { opacity: 1, duration: 0.3 });

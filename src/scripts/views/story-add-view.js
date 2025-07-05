@@ -6,6 +6,7 @@ export class PointAddView {
     this.container = container;
     this.presenter = null;
     this.stream = null;
+    this.facingMode = 'user';
   }
 
   setPresenter(presenter) {
@@ -79,7 +80,6 @@ export class PointAddView {
               Kamera
             </button>
           </div>
-
           <div id="camera-preview"
               style="display: none; text-align: center; width: 100%; margin-bottom: 1rem;">
             <video id="video"
@@ -98,6 +98,12 @@ export class PointAddView {
                 Ambil foto
               </button>
               <button type="button"
+                      id="flip-button"
+                      aria-label="Tukar kamera depan dan belakang"
+                      style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
+                      Flip Kamera
+              </button>
+              <button type="button"
                       id="cancel-button"
                       aria-label="Batalkan dan tutup kamera"
                       style="padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
@@ -106,8 +112,13 @@ export class PointAddView {
             </div>
           </div>
 
-          <input type="hidden" id="lat" name="lat" />
-          <input type="hidden" id="lon" name="lon" />
+          <label for="lat">Latitude:</label>
+          <input type="number" step="any" id="lat" name="lat" required
+          style="margin-bottom: 1rem; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+
+          <label for="lon">Longitude:</label>
+          <input type="number" step="any" id="lon" name="lon" required
+          style="margin-bottom: 1rem; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
 
           <button type="submit"
                   aria-label="Kirim cerita beserta deskripsi dan gambar"
@@ -222,6 +233,23 @@ export class PointAddView {
       marker = L.marker([lat, lng]).addTo(map)
         .bindPopup(`Lokasi dipilih: ${lat.toFixed(3)}, ${lng.toFixed(3)}`).openPopup();
     });
+
+    const latInput = document.getElementById('lat');
+    const lonInput = document.getElementById('lon');
+
+    function updateMarkerFromInput() {
+      const lat = parseFloat(latInput.value);
+      const lon = parseFloat(lonInput.value);
+      if (!isNaN(lat) && !isNaN(lon)) {
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lon]).addTo(map)
+          .bindPopup(`Lokasi manual: ${lat.toFixed(3)}, ${lon.toFixed(3)}`).openPopup();
+        map.setView([lat, lon], 13);
+      }
+    }
+
+    latInput.addEventListener('change', updateMarkerFromInput);
+    lonInput.addEventListener('change', updateMarkerFromInput);
   }
 
   initSubmit() {
@@ -248,6 +276,16 @@ export class PointAddView {
     const photoInput = document.getElementById('photo');
     const cameraPreview = document.getElementById('camera-preview');
     const photoPreview = document.getElementById('photo-preview');
+    const flipButton = document.getElementById('flip-button');
+
+    flipButton.addEventListener('click', async () => {
+      // Toggle mode
+      this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+
+      await this.stopCamera();
+      await this.startCamera();
+    });
+
 
     cameraButton.addEventListener('click', async () => {
       cameraPreview.style.display = 'block';
@@ -330,7 +368,9 @@ export class PointAddView {
   }
 
   async getCameraStream() {
-    return await navigator.mediaDevices.getUserMedia({ video: true });
+    return await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: this.facingMode }
+    });
   }
 
   async startCamera() {
