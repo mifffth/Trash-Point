@@ -100,7 +100,7 @@ export class PointAddView {
               <button type="button"
                       id="flip-button"
                       aria-label="Tukar kamera depan dan belakang"
-                      style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
+                      style="display: none; padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
                       Flip Kamera
               </button>
               <button type="button"
@@ -279,7 +279,6 @@ export class PointAddView {
     const flipButton = document.getElementById('flip-button');
 
     flipButton.addEventListener('click', async () => {
-      // Toggle mode
       this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
 
       await this.stopCamera();
@@ -290,6 +289,7 @@ export class PointAddView {
     cameraButton.addEventListener('click', async () => {
       cameraPreview.style.display = 'block';
       video.style.display = 'block';
+      flipButton.style.display = 'inline-block';
       photoPreview.style.display = 'none';
       captureButton.style.display = 'inline-block';
       cancelButton.textContent = 'Batal';
@@ -321,6 +321,7 @@ export class PointAddView {
       photoInput.value = '';
       captureButton.style.display = 'inline-block';
       cancelButton.textContent = 'Batal';
+      flipButton.style.display = 'none';
     });
 
     window.addEventListener('hashchange', async () => {
@@ -331,6 +332,7 @@ export class PointAddView {
       photoInput.value = '';
       captureButton.style.display = 'inline-block';
       cancelButton.textContent = 'Batal';
+      flipButton.style.display = 'none';
     });
   }
 
@@ -354,6 +356,8 @@ export class PointAddView {
           captureButton.style.display = 'none';
           cancelButton.textContent = 'Hapus Foto';
           this.stopCamera();
+          this.facingMode = 'user';
+          flipButton.style.display = 'none';
         };
         reader.readAsDataURL(file);
       } else {
