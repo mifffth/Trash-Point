@@ -120,13 +120,13 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.bundle.js").then(() => {
-            console.log("Service Worker registered.");
-          });
-        });
-      } else {
-        console.log("Service Worker is not supported by this browser.");
-      }
+    // if ("serviceWorker" in navigator) {
+    //     window.addEventListener("load", () => {
+    //       navigator.serviceWorker.register("/sw.bundle.js").then(() => {
+    //         console.log("Service Worker registered.");
+    //       });
+    //     });
+    //   } else {
+    //     console.log("Service Worker is not supported by this browser.");
+    //   }
 });

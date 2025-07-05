@@ -48,14 +48,24 @@ export class PointAddView {
 
           <label for="photo">Upload Gambar:</label>
           <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
-            <input type="file"
-                  id="photo"
-                  name="photo"
-                  accept="image/*"
-                  capture="environment"
-                  required
-                  aria-label="Pilih gambar untuk diunggah"
-                  style="display: none;">
+            <button type="button"
+                    id="upload-button"
+                    aria-label="Pilih gambar dari file"
+                    style="background: #10b981; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
+              Pilih File
+            </button>
+          <input type="file"
+                id="photo-upload"
+                name="photo"
+                accept="image/*"
+                style="display: none;">
+
+          <input type="file"
+                id="photo-camera"
+                name="photo"
+                accept="image/*"
+                capture="environment"
+                style="display: none;">
             <button type="button"
                     id="camera-button"
                     aria-label="Buka kamera untuk mengambil foto"
@@ -106,6 +116,7 @@ export class PointAddView {
     this.initMap();
     this.initSubmit();
     this.initCamera();
+    this.initUpload();
 
     const mainContent = document.querySelector("#point-form");
     const skipLink = document.querySelector(".skip-link");
@@ -127,6 +138,20 @@ export class PointAddView {
       mainContent.scrollIntoView();
     });
   }
+
+  initUpload() {
+    const uploadButton = document.getElementById('upload-button');
+    const photoUpload = document.getElementById('photo-upload');
+
+    uploadButton.addEventListener('click', () => {
+      photoUpload.click();
+    });
+
+    photoUpload.addEventListener('change', (event) => {
+      this.handlePhotoChange(event.target);
+    });
+  }
+
 
   renderSubmitError(message) {
     alert(message);
@@ -216,6 +241,28 @@ export class PointAddView {
     lonInput.addEventListener('change', updateMarkerFromInput);
   }
 
+  initCamera() {
+    const cameraButton = document.getElementById('camera-button');
+    const photoCamera = document.getElementById('photo-camera');
+
+    cameraButton.addEventListener('click', () => {
+      photoCamera.click();
+    });
+
+    photoCamera.addEventListener('change', (event) => {
+      this.handlePhotoChange(event.target);
+    });
+
+    const cancelButton = document.getElementById('cancel-button');
+    cancelButton.addEventListener('click', () => {
+      photoCamera.value = '';
+      document.getElementById('photo-preview').src = '';
+      document.getElementById('photo-preview').style.display = 'none';
+      document.getElementById('camera-preview').style.display = 'none';
+      cancelButton.textContent = 'Batal';
+    });
+  }
+
   initSubmit() {
     const form = document.getElementById('point-form');
     form.addEventListener('submit', async (e) => {
@@ -231,66 +278,50 @@ export class PointAddView {
       this.presenter.onSubmitPhoto(photo, formData);
     });
   }
+  
+  handlePhotoChange(inputElement) {
+    const file = inputElement.files[0];
+    if (!file) return;
 
-  initCamera() {
-    const cameraButton = document.getElementById('camera-button');
-    const photoInput = document.getElementById('photo');
-    const photoPreview = document.getElementById('photo-preview');
-    const cameraPreview = document.getElementById('camera-preview');
-    const cancelButton = document.getElementById('cancel-button');
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxWidth = 1024;
+      const scale = maxWidth / img.width;
+      canvas.width = maxWidth;
+      canvas.height = img.height * scale;
 
-    cameraButton.addEventListener('click', () => {
-      photoInput.click();
-    });
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    photoInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
+      canvas.toBlob((blob) => {
+        if (blob.size > 1024 * 1024) {
+          alert("Gambar terlalu besar (>1MB). Silakan ambil ulang.");
+          return;
+        }
 
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const maxWidth = 1024;
-        const scale = maxWidth / img.width;
-        canvas.width = maxWidth;
-        canvas.height = img.height * scale;
+        const previewUrl = URL.createObjectURL(blob);
+        const photoPreview = document.getElementById('photo-preview');
+        const cameraPreview = document.getElementById('camera-preview');
 
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        photoPreview.src = previewUrl;
+        photoPreview.style.display = 'block';
+        cameraPreview.style.display = 'block';
 
-        canvas.toBlob((blob) => {
-          if (blob.size > 1024 * 1024) {
-            alert("Gambar terlalu besar (>1MB). Silakan ambil ulang.");
-            return;
-          }
+        const compressedFile = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(compressedFile);
 
-          const previewUrl = URL.createObjectURL(blob);
-          photoPreview.src = previewUrl;
-          photoPreview.style.display = 'block';
-          cameraPreview.style.display = 'block';
-          cancelButton.textContent = 'Hapus Foto';
+        document.getElementById('photo-upload').files = dataTransfer.files;
+        document.getElementById('photo-camera').files = dataTransfer.files;
+      }, 'image/jpeg', 0.85);
+    };
 
-          const compressedFile = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-          const dataTransfer = new DataTransfer();
-          dataTransfer.items.add(compressedFile);
-          photoInput.files = dataTransfer.files;
-        }, 'image/jpeg', 0.85);
-      };
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    cancelButton.addEventListener('click', () => {
-      photoInput.value = '';
-      photoPreview.src = '';
-      photoPreview.style.display = 'none';
-      cameraPreview.style.display = 'none';
-      cancelButton.textContent = 'Batal';
-    });
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   captureImageFromVideo(video) {
