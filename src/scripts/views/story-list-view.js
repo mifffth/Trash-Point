@@ -8,6 +8,16 @@ export class PointListView {
     this.map = null;
     this.currentPoint = null;
     this.mapReports = null;
+
+    L.Marker.prototype.options.icon = L.icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+      shadowAnchor: [12, 41],
+    });
   }
 
   setPresenter(presenter) {
@@ -108,6 +118,10 @@ export class PointListView {
 
     if (!points.length) {
       this.container.innerHTML = '<h2 class="font-bold mb-4 text-xl">Belum ada cerita</h2>';
+      if (this.mapReports) {
+        this.mapReports.remove();
+        this.mapReports = null;
+      }
       return;
     }
 
@@ -117,16 +131,6 @@ export class PointListView {
     const mapModal = this.container.querySelector('#map-modal');
     const modalContent = this.container.querySelector('#modal-content');
     const mapEl = document.querySelector('#map-reports');
-
-    L.Marker.prototype.options.icon = L.icon({
-          iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-          shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-          shadownAnchor: [12, 41]
-        });
 
     skipLink.addEventListener("click", function (event) {
       event.preventDefault();
@@ -198,6 +202,11 @@ export class PointListView {
       }
     });
 
+    if (this.mapReports && this.mapReports.getContainer() && !this.mapReports.getContainer().isConnected) {
+      this.mapReports.remove();
+      this.mapReports = null;
+    }
+
     if (!this.mapReports) {
       this.mapReports = L.map(mapEl).setView([-2.5, 118], 5);
       const baseLayers = {
@@ -219,17 +228,16 @@ export class PointListView {
       });
     }
 
-
     points.forEach((point) => {
       if (point.latitude && point.longitude) { 
         L.marker([point.latitude, point.longitude]) 
           .addTo(this.mapReports)
           .bindPopup(`
             <strong>${point.description}</strong><br>
-            <a href="https://www.google.com/maps?q=${point.latitude}${point.longitude}" target="_blank" rel="noopener">
-              ${point.latitude}, ${point.longitude}
+            <a href="http://www.google.com/maps/place/${point.latitude},${point.longitude}" target="_blank" rel="noopener">
+              Lihat di Google Maps
             </a>
-          `)   
+          `);   
       }
     });
   }
@@ -241,16 +249,6 @@ export class PointListView {
     const pointCreated = this.container.querySelector('#point-created');
     const mapModal = this.container.querySelector('#map-modal');
     const modalContent = this.container.querySelector('#modal-content');
-
-    L.Marker.prototype.options.icon = L.icon({
-          iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-          shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-          shadownAnchor: [12, 41]
-        });
 
     mapModal.style.display = 'flex';
     modalContent.focus();
@@ -284,12 +282,12 @@ export class PointListView {
       if (layer instanceof L.Marker) this.map.removeLayer(layer);
     });
     L.marker([point.latitude, point.longitude]).addTo(this.map) 
-    .bindPopup(`
-      <strong>${point.description}</strong><br>
-      <a href="https://www.google.com/maps?q=${point.latitude}${point.longitude}" target="_blank" rel="noopener">
-        ${point.latitude}, ${point.longitude}
-      </a>
-    `) 
+      .bindPopup(`
+        <strong>${point.description}</strong><br>
+        <a href="http://www.google.com/maps/place/${point.latitude},${point.longitude}" target="_blank" rel="noopener">
+          Lihat di Google Maps
+        </a>
+      `) 
       .openPopup();
   }
 }
