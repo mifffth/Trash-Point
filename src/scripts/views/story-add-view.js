@@ -5,8 +5,6 @@ export class PointAddView {
   constructor(container) {
     this.container = container;
     this.presenter = null;
-    this.stream = null;
-    this.facingMode = 'environment';
   }
 
   setPresenter(presenter) {
@@ -37,81 +35,44 @@ export class PointAddView {
 
           <div style="margin-bottom: 1rem;">
             <label style="display: block; margin-bottom: 0.5rem;">Tipe Lokasi:</label>
-            <label>
-              <input type="radio" name="type" value="Bank sampah" required>
-              <span>Bank sampah</span>
-            </label><br>
-            <label>
-              <input type="radio" name="type" value="TPA">
-              <span>TPA</span>
-            </label><br>
-            <label>
-              <input type="radio" name="type" value="Tempat sampah umum">
-              <span>Tempat sampah umum</span>
-            </label>
+            <label><input type="radio" name="type" value="Bank sampah" required> Bank sampah</label><br>
+            <label><input type="radio" name="type" value="TPA"> TPA</label><br>
+            <label><input type="radio" name="type" value="Tempat sampah umum"> Tempat sampah umum</label>
           </div>
 
           <div style="margin-bottom: 1rem;">
             <label style="display: block; margin-bottom: 0.5rem;">Status:</label>
-            <label>
-              <input type="radio" name="status" value="Aktif" required>
-              <span>Aktif</span>
-            </label><br>
-            <label>
-              <input type="radio" name="status" value="Tidak aktif">
-              <span>Tidak aktif</span>
-            </label>
+            <label><input type="radio" name="status" value="Aktif" required> Aktif</label><br>
+            <label><input type="radio" name="status" value="Tidak aktif"> Tidak aktif</label>
           </div>
 
           <label for="photo">Upload Gambar:</label>
-
           <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
             <input type="file"
                   id="photo"
                   name="photo"
                   accept="image/*"
+                  capture="environment"
                   required
                   aria-label="Pilih gambar untuk diunggah"
-                  style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; font-size: 1rem; width: 100%;">
-            <input type="file" accept="image/*" capture="environment" id="mobile-camera-capture" style="display: none;">
+                  style="display: none;">
             <button type="button"
                     id="camera-button"
                     aria-label="Buka kamera untuk mengambil foto"
                     style="background: #0ea5e9; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
               Kamera
             </button>
-            <input type="file" 
-       accept="image/*" 
-       capture="environment" 
-       id="mobile-camera-capture" 
-       style="display: none;">
           </div>
+
           <div id="camera-preview"
-              style="display: none; text-align: center; width: 100%; margin-bottom: 1rem;">
-            <video id="video"
-                  autoplay
-                  aria-label="Pratinjau kamera"
-                  style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 1rem;">
-            </video>
+              style="display: none; text-align: center; width: 100%; margin-top: 0.5rem;">
             <img id="photo-preview"
-                style="display: none; width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 1rem;"
+                style="display: none; width: 100%; max-width: 400px; border-radius: 8px;"
                 alt="Pratinjau foto yang diambil">
-            <div style="display: flex; justify-content: center; gap: 1rem;">
-              <button type="button"
-                      id="capture-button"
-                      aria-label="Ambil foto dari kamera"
-                      style="padding: 8px 16px; background: #0284c7; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-                Ambil foto
-              </button>
-              <button type="button"
-                      id="flip-button"
-                      aria-label="Tukar kamera depan dan belakang"
-                      style="display: none; padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-                      Flip Kamera
-              </button>
+            <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 0.5rem;">
               <button type="button"
                       id="cancel-button"
-                      aria-label="Batalkan dan tutup kamera"
+                      aria-label="Batalkan dan hapus foto"
                       style="padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
                 Batal
               </button>
@@ -136,17 +97,15 @@ export class PointAddView {
 
         <div id="map-add"
             aria-label="Peta lokasi"
-            style="flex: 1 1 300px; min-width: 280px; height:flex ; border: 1px solid #ccc; border-radius: 8px;">
+            style="flex: 1 1 300px; min-width: 280px; height: 400px; border: 1px solid #ccc; border-radius: 8px;">
         </div>
-
       </div>
     </article>
+    `;
 
-`;
     this.initMap();
     this.initSubmit();
     this.initCamera();
-    this.initFileInput();
 
     const mainContent = document.querySelector("#point-form");
     const skipLink = document.querySelector(".skip-link");
@@ -167,7 +126,6 @@ export class PointAddView {
       mainContent.focus();
       mainContent.scrollIntoView();
     });
-
   }
 
   renderSubmitError(message) {
@@ -276,181 +234,64 @@ export class PointAddView {
 
   initCamera() {
     const cameraButton = document.getElementById('camera-button');
-    const mobileCaptureInput = document.getElementById('mobile-camera-capture');
     const photoInput = document.getElementById('photo');
     const photoPreview = document.getElementById('photo-preview');
     const cameraPreview = document.getElementById('camera-preview');
     const cancelButton = document.getElementById('cancel-button');
-  
+
     cameraButton.addEventListener('click', () => {
-      mobileCaptureInput.click();
+      photoInput.click();
     });
-  
-    mobileCaptureInput.addEventListener('change', (event) => {
+
+    photoInput.addEventListener('change', (event) => {
       const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          photoPreview.src = e.target.result;
+      if (!file) return;
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxWidth = 1024;
+        const scale = maxWidth / img.width;
+        canvas.width = maxWidth;
+        canvas.height = img.height * scale;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((blob) => {
+          if (blob.size > 1024 * 1024) {
+            alert("Gambar terlalu besar (>1MB). Silakan ambil ulang.");
+            return;
+          }
+
+          const previewUrl = URL.createObjectURL(blob);
+          photoPreview.src = previewUrl;
           photoPreview.style.display = 'block';
           cameraPreview.style.display = 'block';
           cancelButton.textContent = 'Hapus Foto';
-  
+
+          const compressedFile = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
           const dataTransfer = new DataTransfer();
-          dataTransfer.items.add(file);
+          dataTransfer.items.add(compressedFile);
           photoInput.files = dataTransfer.files;
-        };
-        reader.readAsDataURL(file);
-      }
+        }, 'image/jpeg', 0.85);
+      };
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     });
-  
+
     cancelButton.addEventListener('click', () => {
       photoInput.value = '';
-      mobileCaptureInput.value = '';
       photoPreview.src = '';
       photoPreview.style.display = 'none';
       cameraPreview.style.display = 'none';
       cancelButton.textContent = 'Batal';
     });
   }
-  
-  async getCameraStream() {
-    const constraints = {
-      video: {
-        facingMode: { ideal: this.facingMode }
-      }
-    };
-
-    try {
-      if (this.facingMode === 'environment') {
-        constraints.video.facingMode = { exact: 'environment' };
-      } else {
-        constraints.video.facingMode = { exact: 'user' };
-      }
-      return await navigator.mediaDevices.getUserMedia(constraints);
-    } catch (err) {
-      console.warn('Exact facingMode failed, falling back to ideal.', err);
-      constraints.video.facingMode = { ideal: this.facingMode };
-      return await navigator.mediaDevices.getUserMedia(constraints);
-    }
-  }
-
-  async startCamera() {
-    const video = document.getElementById('video');
-
-    if (this.stream) {
-      this.stopCamera();
-    }
-
-    try {
-      this.stream = await this.getCameraStream();
-      video.srcObject = this.stream;
-      video.play();
-    } catch (err) {
-      console.error('Camera error:', err);
-      alert('Tidak dapat mengakses kamera!');
-      document.getElementById('camera-preview').style.display = 'none';
-    }
-  }
-
-  async stopCamera() {
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.stop());
-      this.stream = null;
-    }
-
-    const video = document.getElementById('video');
-    if (video) {
-      video.srcObject = null;
-      video.style.display = 'none';
-    }
-  }
-
-  initFileInput() {
-    const photoInput = document.getElementById('photo');
-    const cameraPreview = document.getElementById('camera-preview');
-    const video = document.getElementById('video');
-    const photoPreview = document.getElementById('photo-preview');
-    const captureButton = document.getElementById('capture-button');
-    const cancelButton = document.getElementById('cancel-button');
-    const flipButton = document.getElementById('flip-button');
-
-    photoInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          photoPreview.src = e.target.result;
-          cameraPreview.style.display = 'block';
-          video.style.display = 'none';
-          photoPreview.style.display = 'block';
-          captureButton.style.display = 'none';
-          cancelButton.textContent = 'Hapus Foto';
-          this.stopCamera();
-          this.facingMode = 'user';
-          flipButton.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-      } else {
-        cameraPreview.style.display = 'none';
-        photoPreview.style.display = 'none';
-        photoPreview.src = '';
-        captureButton.style.display = 'inline-block';
-        cancelButton.textContent = 'Batal';
-        this.stopCamera();
-      }
-    });
-  }
-
-  async getCameraStream() {
-    const constraints = {
-      video: {
-        facingMode: { ideal: this.facingMode }
-      }
-    };
-
-    try {
-      if (this.facingMode === 'environment') {
-        constraints.video.facingMode = { exact: 'environment' };
-      } else {
-        constraints.video.facingMode = { exact: 'user' };
-      }
-      return await navigator.mediaDevices.getUserMedia(constraints);
-    } catch (err) {
-      console.warn('Exact facingMode failed, falling back to ideal.', err);
-      constraints.video.facingMode = { ideal: this.facingMode };
-      return await navigator.mediaDevices.getUserMedia(constraints);
-    }
-  }
-
-
-  // async startCamera() {
-  //   const video = document.getElementById('video');
-
-  //   if (!this.stream) {
-  //     try {
-  //       this.stream = await this.getCameraStream();
-  //       video.srcObject = this.stream;
-  //     } catch (err) {
-  //       console.error('Camera error:', err);
-  //       alert('Tidak dapat mengakses kamera!');
-  //       document.getElementById('camera-preview').style.display = 'none';
-  //     }
-  //   }
-  // }
-
-  // async stopCamera() {
-  //   if (this.stream) {
-  //     this.stream.getTracks().forEach(track => track.stop());
-  //     this.stream = null;
-  //   }
-
-  //   const video = document.getElementById('video');
-  //   if (video) {
-  //     video.srcObject = null;
-  //     video.style.display = 'none';
-  //   }
-  // }
 
   captureImageFromVideo(video) {
     const canvas = document.createElement('canvas');
@@ -490,4 +331,3 @@ export class PointAddView {
     window.location.hash = hash;
   }
 }
-
