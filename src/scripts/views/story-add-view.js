@@ -6,7 +6,7 @@ export class PointAddView {
     this.container = container;
     this.presenter = null;
     this.stream = null;
-    this.facingMode = 'environtmen';
+    this.facingMode = 'environment';
   }
 
   setPresenter(presenter) {
@@ -362,10 +362,25 @@ export class PointAddView {
   }
 
   async getCameraStream() {
-    return await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: this.facingMode }
-    });
-  }
+    const constraints = {
+      video: {
+        facingMode: { ideal: this.facingMode }
+      }
+    };
+  
+    try {
+     if (this.facingMode === 'environment') {
+        constraints.video.facingMode = { exact: 'environment' };
+      } else {
+        constraints.video.facingMode = { exact: 'user' };
+      }
+      return await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (err) {
+      console.warn('Exact facingMode failed, falling back to ideal.', err);
+      constraints.video.facingMode = { ideal: this.facingMode };
+      return await navigator.mediaDevices.getUserMedia(constraints);
+    }
+  }  
 
   async startCamera() {
     const video = document.getElementById('video');
@@ -432,11 +447,27 @@ export class PointAddView {
   }
 
   async getCameraStream() {
-    return await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: this.facingMode }
-    });
+    const constraints = {
+      video: {
+        facingMode: { ideal: this.facingMode }
+      }
+    };
+  
+    try {
+      if (this.facingMode === 'environment') {
+        constraints.video.facingMode = { exact: 'environment' };
+      } else {
+        constraints.video.facingMode = { exact: 'user' };
+      }
+      return await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (err) {
+      console.warn('Exact facingMode failed, falling back to ideal.', err);
+      constraints.video.facingMode = { ideal: this.facingMode };
+      return await navigator.mediaDevices.getUserMedia(constraints);
+    }
   }
-
+  
+  
   async startCamera() {
     const video = document.getElementById('video');
 
