@@ -54,13 +54,14 @@ async function deleteFromCloudinary(publicId) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ publicId }),
-    });    
+      body: JSON.stringify({ public_id: publicId }),  
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to delete from Cloudinary via Netlify function');
+      throw new Error(errorData.error || 'Failed to delete from Cloudinary via Netlify function');
     }
+
     console.log('Image deleted from Cloudinary successfully.');
   } catch (error) {
     console.error('Error deleting from Cloudinary:', error);
@@ -83,6 +84,7 @@ export async function deletePoint(pointId) {
     }
 
     await deleteDoc(pointRef);
+    console.log('Point deleted from Firestore successfully.');
   } catch (error) {
     console.error('Error deleting point:', error);
     throw new Error('Failed to delete point: ' + error.message);
