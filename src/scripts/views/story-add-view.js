@@ -273,26 +273,18 @@ export class PointAddView {
     const video = document.getElementById('video');
     const captureButton = document.getElementById('capture-button');
     const cancelButton = document.getElementById('cancel-button');
+    const flipButton = document.getElementById('flip-button');
     const photoInput = document.getElementById('photo');
     const cameraPreview = document.getElementById('camera-preview');
     const photoPreview = document.getElementById('photo-preview');
-    const flipButton = document.getElementById('flip-button');
-
-    flipButton.addEventListener('click', async () => {
-      this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
-
-      await this.stopCamera();
-      await this.startCamera();
-    });
-
 
     cameraButton.addEventListener('click', async () => {
       cameraPreview.style.display = 'block';
       video.style.display = 'block';
-      flipButton.style.display = 'inline-block';
       photoPreview.style.display = 'none';
       captureButton.style.display = 'inline-block';
       cancelButton.textContent = 'Batal';
+      flipButton.style.display = 'inline-block';
       await this.startCamera();
     });
 
@@ -305,7 +297,7 @@ export class PointAddView {
       photoPreview.style.display = 'block';
       captureButton.style.display = 'none';
       cancelButton.textContent = 'Hapus Foto';
-
+      flipButton.style.display = 'none';
       this.canvasToFile(canvas, (file) => {
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
@@ -324,6 +316,39 @@ export class PointAddView {
       flipButton.style.display = 'none';
     });
 
+    flipButton.addEventListener('click', async () => {
+      this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+      await this.stopCamera();
+      await this.startCamera();
+    });
+
+    photoInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          photoPreview.src = e.target.result;
+          cameraPreview.style.display = 'block';
+          video.style.display = 'none';
+          photoPreview.style.display = 'block';
+          captureButton.style.display = 'none';
+          cancelButton.textContent = 'Hapus Foto';
+          flipButton.style.display = 'none';
+          this.stopCamera();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        cameraPreview.style.display = 'none';
+        photoPreview.style.display = 'none';
+        photoPreview.src = '';
+        captureButton.style.display = 'inline-block';
+        cancelButton.textContent = 'Batal';
+        flipButton.style.display = 'none';
+        this.stopCamera();
+      }
+      this.facingMode = 'user';
+    });
+
     window.addEventListener('hashchange', async () => {
       await this.stopCamera();
       cameraPreview.style.display = 'none';
@@ -336,6 +361,40 @@ export class PointAddView {
     });
   }
 
+  async getCameraStream() {
+    return await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: this.facingMode }
+    });
+  }
+
+  async startCamera() {
+    const video = document.getElementById('video');
+
+    if (!this.stream) {
+      try {
+        this.stream = await this.getCameraStream();
+        video.srcObject = this.stream;
+      } catch (err) {
+        console.error('Camera error:', err);
+        alert('Tidak dapat mengakses kamera!');
+        document.getElementById('camera-preview').style.display = 'none';
+      }
+    }
+  }
+
+  async stopCamera() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
+
+    const video = document.getElementById('video');
+    if (video) {
+      video.srcObject = null;
+      video.style.display = 'none';
+    }
+  }
+
   initFileInput() {
     const photoInput = document.getElementById('photo');
     const cameraPreview = document.getElementById('camera-preview');
@@ -343,6 +402,7 @@ export class PointAddView {
     const photoPreview = document.getElementById('photo-preview');
     const captureButton = document.getElementById('capture-button');
     const cancelButton = document.getElementById('cancel-button');
+    const flipButton = document.getElementById('flip-button');
 
     photoInput.addEventListener('change', (event) => {
       const file = event.target.files[0];
