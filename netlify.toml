@@ -1,2 +1,6 @@
 [functions]
     directory = "netlify/functions"
+    functions = "delete"
+    functions = "upload"
+    command = "npm run build"
+    publish = "dist"
