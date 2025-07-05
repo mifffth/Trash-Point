@@ -140,7 +140,6 @@ export class PointAddView {
     const photoInput = document.getElementById('photo');
 
     uploadButton.addEventListener('click', () => {
-      photoInput.removeAttribute('capture');
       photoInput.click();
     });
   }
@@ -233,22 +232,6 @@ export class PointAddView {
     lonInput.addEventListener('change', updateMarkerFromInput);
   }
 
-  initSubmit() {
-    const form = document.getElementById('point-form');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const descriptionInput = form.querySelector('#description');
-      const cleanedDescription = descriptionInput.value.trim();
-
-      descriptionInput.value = cleanedDescription;
-
-      const photo = form.photo.files[0];
-      const formData = new FormData(form);
-      this.presenter.onSubmitPhoto(photo, formData);
-    });
-  }
-
   initCamera() {
     const cameraButton = document.getElementById('camera-button');
     const photoInput = document.getElementById('photo');
@@ -307,6 +290,22 @@ export class PointAddView {
       photoPreview.style.display = 'none';
       cameraPreview.style.display = 'none';
       cancelButton.textContent = 'Batal';
+    });
+  }
+
+  initSubmit() {
+    const form = document.getElementById('point-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const descriptionInput = form.querySelector('#description');
+      const cleanedDescription = descriptionInput.value.trim();
+
+      descriptionInput.value = cleanedDescription;
+
+      const photo = form.photo.files[0];
+      const formData = new FormData(form);
+      this.presenter.onSubmitPhoto(photo, formData);
     });
   }
 
