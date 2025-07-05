@@ -48,12 +48,6 @@ export class PointAddView {
 
           <label for="photo">Upload Gambar:</label>
           <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
-            <button type="button"
-                    id="upload-button"
-                    aria-label="Pilih gambar dari file"
-                    style="background: #10b981; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-              Pilih File
-            </button>
             <input type="file"
                   id="photo"
                   name="photo"
@@ -112,7 +106,6 @@ export class PointAddView {
     this.initMap();
     this.initSubmit();
     this.initCamera();
-    this.initUpload();
 
     const mainContent = document.querySelector("#point-form");
     const skipLink = document.querySelector(".skip-link");
@@ -132,15 +125,6 @@ export class PointAddView {
       skipLink.blur();
       mainContent.focus();
       mainContent.scrollIntoView();
-    });
-  }
-
-  initUpload() {
-    const uploadButton = document.getElementById('upload-button');
-    const photoInput = document.getElementById('photo');
-
-    uploadButton.addEventListener('click', () => {
-      photoInput.click();
     });
   }
 
@@ -232,6 +216,22 @@ export class PointAddView {
     lonInput.addEventListener('change', updateMarkerFromInput);
   }
 
+  initSubmit() {
+    const form = document.getElementById('point-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const descriptionInput = form.querySelector('#description');
+      const cleanedDescription = descriptionInput.value.trim();
+
+      descriptionInput.value = cleanedDescription;
+
+      const photo = form.photo.files[0];
+      const formData = new FormData(form);
+      this.presenter.onSubmitPhoto(photo, formData);
+    });
+  }
+
   initCamera() {
     const cameraButton = document.getElementById('camera-button');
     const photoInput = document.getElementById('photo');
@@ -290,22 +290,6 @@ export class PointAddView {
       photoPreview.style.display = 'none';
       cameraPreview.style.display = 'none';
       cancelButton.textContent = 'Batal';
-    });
-  }
-
-  initSubmit() {
-    const form = document.getElementById('point-form');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const descriptionInput = form.querySelector('#description');
-      const cleanedDescription = descriptionInput.value.trim();
-
-      descriptionInput.value = cleanedDescription;
-
-      const photo = form.photo.files[0];
-      const formData = new FormData(form);
-      this.presenter.onSubmitPhoto(photo, formData);
     });
   }
 
