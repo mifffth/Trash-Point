@@ -48,30 +48,29 @@ export class PointAddView {
 
           <label for="photo">Upload Gambar:</label>
           <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
-            <button type="button"
-                    id="upload-button"
-                    aria-label="Pilih gambar dari file"
-                    style="background: #10b981; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-              Pilih File
-            </button>
+          <button type="button"
+                  id="upload-button"
+                  aria-label="Pilih gambar dari file"
+                  style="background: #10b981; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
+                  Pilih File
+          </button>
           <input type="file"
-                id="photo-upload"
-                name="photo"
-                accept="image/*"
-                style="display: none;">
-
-          <input type="file"
-                id="photo-camera"
-                name="photo"
-                accept="image/*"
-                capture="environment"
-                style="display: none;">
-            <button type="button"
-                    id="camera-button"
-                    aria-label="Buka kamera untuk mengambil foto"
-                    style="background: #0ea5e9; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
+                  id="photo-upload"
+                  name="photo"
+                  accept="image/*"
+                  style="display: none;"> 
+          <button type="button"
+                  id="camera-button"
+                  aria-label="Buka kamera untuk mengambil foto"
+                  style="background: #0ea5e9; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
               Kamera
-            </button>
+          </button>
+          <input type="file"
+                  id="photo-camera"
+                  name="photo"
+                  accept="image/*"
+                  capture="environment"
+                  style="display: none;">
           </div>
 
           <div id="camera-preview"
@@ -244,24 +243,26 @@ export class PointAddView {
   initCamera() {
     const cameraButton = document.getElementById('camera-button');
     const photoCamera = document.getElementById('photo-camera');
-
+    const cancelButton = document.getElementById('cancel-button');
+  
     cameraButton.addEventListener('click', () => {
       photoCamera.click();
     });
-
+  
     photoCamera.addEventListener('change', (event) => {
       this.handlePhotoChange(event.target);
     });
-
-    const cancelButton = document.getElementById('cancel-button');
+  
     cancelButton.addEventListener('click', () => {
       photoCamera.value = '';
+      document.getElementById('photo-upload').value = '';
       document.getElementById('photo-preview').src = '';
       document.getElementById('photo-preview').style.display = 'none';
       document.getElementById('camera-preview').style.display = 'none';
       cancelButton.textContent = 'Batal';
     });
   }
+  
 
   initSubmit() {
     const form = document.getElementById('point-form');
@@ -273,12 +274,13 @@ export class PointAddView {
 
       descriptionInput.value = cleanedDescription;
 
-      const photo = form.photo.files[0];
+      const photoInput = document.getElementById('photo-upload'); 
+      const photo = photoInput.files[0];
       const formData = new FormData(form);
       this.presenter.onSubmitPhoto(photo, formData);
     });
   }
-  
+
   handlePhotoChange(inputElement) {
     const file = inputElement.files[0];
     if (!file) return;
