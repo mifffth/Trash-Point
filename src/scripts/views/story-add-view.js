@@ -80,6 +80,11 @@ export class PointAddView {
                     style="background: #0ea5e9; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
               Kamera
             </button>
+            <input type="file" 
+       accept="image/*" 
+       capture="environment" 
+       id="mobile-camera-capture" 
+       style="display: none;">
           </div>
           <div id="camera-preview"
               style="display: none; text-align: center; width: 100%; margin-bottom: 1rem;">
@@ -271,61 +276,26 @@ export class PointAddView {
 
   initCamera() {
     const cameraButton = document.getElementById('camera-button');
-    const video = document.getElementById('video');
-    const captureButton = document.getElementById('capture-button');
-    const cancelButton = document.getElementById('cancel-button');
-    const flipButton = document.getElementById('flip-button');
-    const photoInput = document.getElementById('photo');
-    const cameraPreview = document.getElementById('camera-preview');
-    const photoPreview = document.getElementById('photo-preview');
     const mobileCaptureInput = document.getElementById('mobile-camera-capture');
-
-    cameraButton.addEventListener('click', async () => {
-      cameraPreview.style.display = 'block';
-      video.style.display = 'block';
-      photoPreview.style.display = 'none';
-      captureButton.style.display = 'inline-block';
-      cancelButton.textContent = 'Batal';
-      flipButton.style.display = 'inline-block';
-      await this.startCamera();
+    const photoInput = document.getElementById('photo');
+    const photoPreview = document.getElementById('photo-preview');
+    const cameraPreview = document.getElementById('camera-preview');
+    const cancelButton = document.getElementById('cancel-button');
+  
+    cameraButton.addEventListener('click', () => {
+      mobileCaptureInput.click();
     });
-
-    // captureButton.addEventListener('click', async () => {
-    //   if (!this.stream) return;
-    //   const canvas = this.captureImageFromVideo(video);
-    //   await this.stopCamera();
-
-    //   photoPreview.src = canvas.toDataURL('image/jpeg');
-    //   photoPreview.style.display = 'block';
-    //   captureButton.style.display = 'none';
-    //   cancelButton.textContent = 'Hapus Foto';
-    //   flipButton.style.display = 'none';
-    //   this.canvasToFile(canvas, (file) => {
-    //     const dataTransfer = new DataTransfer();
-    //     dataTransfer.items.add(file);
-    //     photoInput.files = dataTransfer.files;
-    //   });
-    // });
-
-   
-    captureButton.addEventListener('click', () => {
-      mobileCaptureInput.click(); // open native camera app
-    });
-
+  
     mobileCaptureInput.addEventListener('change', (event) => {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
           photoPreview.src = e.target.result;
-          cameraPreview.style.display = 'block';
-          video.style.display = 'none';
           photoPreview.style.display = 'block';
-          captureButton.style.display = 'none';
+          cameraPreview.style.display = 'block';
           cancelButton.textContent = 'Hapus Foto';
-          flipButton.style.display = 'none';
-          this.stopCamera();
-
+  
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(file);
           photoInput.files = dataTransfer.files;
@@ -333,64 +303,17 @@ export class PointAddView {
         reader.readAsDataURL(file);
       }
     });
-
-
-    cancelButton.addEventListener('click', async () => {
-      await this.stopCamera();
-      cameraPreview.style.display = 'none';
-      photoPreview.style.display = 'none';
-      photoPreview.src = '';
+  
+    cancelButton.addEventListener('click', () => {
       photoInput.value = '';
-      captureButton.style.display = 'inline-block';
-      cancelButton.textContent = 'Batal';
-      flipButton.style.display = 'none';
-    });
-
-    flipButton.addEventListener('click', async () => {
-      this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
-      await this.stopCamera();
-      await this.startCamera();
-    });
-
-    photoInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          photoPreview.src = e.target.result;
-          cameraPreview.style.display = 'block';
-          video.style.display = 'none';
-          photoPreview.style.display = 'block';
-          captureButton.style.display = 'none';
-          cancelButton.textContent = 'Hapus Foto';
-          flipButton.style.display = 'none';
-          this.stopCamera();
-        };
-        reader.readAsDataURL(file);
-      } else {
-        cameraPreview.style.display = 'none';
-        photoPreview.style.display = 'none';
-        photoPreview.src = '';
-        captureButton.style.display = 'inline-block';
-        cancelButton.textContent = 'Batal';
-        flipButton.style.display = 'none';
-        this.stopCamera();
-      }
-      this.facingMode = 'user';
-    });
-
-    window.addEventListener('hashchange', async () => {
-      await this.stopCamera();
-      cameraPreview.style.display = 'none';
-      photoPreview.style.display = 'none';
+      mobileCaptureInput.value = '';
       photoPreview.src = '';
-      photoInput.value = '';
-      captureButton.style.display = 'inline-block';
+      photoPreview.style.display = 'none';
+      cameraPreview.style.display = 'none';
       cancelButton.textContent = 'Batal';
-      flipButton.style.display = 'none';
     });
   }
-
+  
   async getCameraStream() {
     const constraints = {
       video: {
