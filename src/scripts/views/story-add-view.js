@@ -6,7 +6,7 @@ export class PointAddView {
     this.container = container;
     this.presenter = null;
     this.stream = null;
-    this.facingMode = 'user';
+    this.facingMode = 'environtmen';
   }
 
   setPresenter(presenter) {
