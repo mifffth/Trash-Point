@@ -23,7 +23,7 @@ function renderView() {
 
     const token = localStorage.getItem('token');
     const loggedIn = !!token;
-    if (!loggedIn && !['#/login', '#/logout', '#/register'].includes(hash)) {
+    if (!loggedIn && !['#/login', '#/logout', '#/register', '#/stories'].includes(hash)) {
         alert('Anda harus masuk terlebih dahulu!');
         window.location.hash = '#/login';
         return;

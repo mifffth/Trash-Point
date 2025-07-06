@@ -17,7 +17,7 @@ export class PointAddView {
 
     <article id="form-map-wrapper"
             style="background: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 2rem; width: 100%; max-width: 960px; display: flex; flex-direction: column; justify-content: center; margin: 0 auto;">
-      <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Tambah Cerita</h2>
+      <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Tambah Titik</h2>
 
       <div class="form-map-wrapper" style="display: flex; flex-wrap: wrap; gap: 2rem;">
         
@@ -106,7 +106,7 @@ export class PointAddView {
 
         <div id="map-add"
             aria-label="Peta lokasi"
-            style="flex: 1 1 300px; min-width: 280px; height: 400px; border: 1px solid #ccc; border-radius: 8px;">
+            style="flex: 1 1 300px; min-width: 280px; height: flex; border: 1px solid #ccc; border-radius: 8px;">
         </div>
       </div>
     </article>
@@ -219,7 +219,7 @@ export class PointAddView {
 
       if (marker) map.removeLayer(marker);
       marker = L.marker([lat, lng]).addTo(map)
-        .bindPopup(`Lokasi dipilih: ${lat.toFixed(3)}, ${lng.toFixed(3)}`).openPopup();
+        .bindPopup(`Koordinat: ${lat.toFixed(3)}, ${lng.toFixed(3)}`).openPopup();
     });
 
     const latInput = document.getElementById('lat');
@@ -231,7 +231,7 @@ export class PointAddView {
       if (!isNaN(lat) && !isNaN(lon)) {
         if (marker) map.removeLayer(marker);
         marker = L.marker([lat, lon]).addTo(map)
-          .bindPopup(`Lokasi manual: ${lat.toFixed(3)}, ${lon.toFixed(3)}`).openPopup();
+          .bindPopup(`Koordinat: ${lat.toFixed(3)}, ${lon.toFixed(3)}`).openPopup();
         map.setView([lat, lon], 13);
       }
     }

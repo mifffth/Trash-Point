@@ -101,14 +101,27 @@ export class PointListView {
                 box-shadow: 0 10px 30px rgba(0,0,0,0.4);
               "
             >
-              <div
-                id="map"
-                style="width: 100%; height: 300px;"
-                aria-hidden="true"
-              ></div>
+              <div id="media-scroll-container" 
+                  style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 300px;">
+                <img id="point-photo" 
+                    style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start;" 
+                    alt="Foto laporan" />
+                <div id="map" 
+                    style="width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start;" 
+                    aria-hidden="true">
+                </div>
+              </div>
+
+              <div id="media-indicator" style="display: flex; justify-content: center; gap: 8px; margin-top: 8px;">
+                <span class="indicator-dot active-dot"></span>
+                <span class="indicator-dot"></span>
+              </div>
+
+
               <div id="point-detail" style="padding: 1rem;" aria-live="polite">
                 <h3 id="point-title" class="font-bold mb-4"></h3>
                 <p id="point-description"></p>
+                <p id="point-type"></p>
                 <small id="point-created"></small>
               </div>
             </div>
@@ -144,11 +157,18 @@ export class PointListView {
       item.className = 'bg-white rounded-xl shadow-md overflow-hidden p-4 flex flex-col gap-2 text-sm hover:shadow-lg transition-shadow duration-200';
       item.setAttribute('tabindex', '0');
       item.innerHTML = `
-    <img src="${point.photoUrl}" alt="Foto dari ${point.description}" class="w-full h-auto rounded-md cursor-pointer object-cover" loading="lazy" />
-    <h3 class="text-lg font-semibold">${point.description}</h3>
+    <img src="${point.photoUrl}"class="w-full h-auto rounded-md cursor-pointer object-cover min-h-100 max-h-100 min-w-100" loading="lazy" />
     <p class="text-gray-700">${point.description}</p>
-    <p class="text-gray-700">Jenis titik: ${point.type}</p>
-    <p class="text-gray-700">Status aktif/tidak aktif: ${point.status}</p>
+    <p class="text-gray-700">
+      Jenis titik: <strong>${point.type}</strong>
+    </p>
+    <p class="text-gray-700">
+      Status:
+      <span class="inline-block px-2 py-1 rounded-full text-white text-xs font-semibold ${point.status === 'aktif' ? 'bg-green-500' : 'bg-red-500'
+        }">
+        ${point.status === 'aktif' ? 'Aktif' : 'Tidak Aktif'}
+      </span>
+    </p>
     <small class="text-gray-500">Dibuat: ${point.createdAt ? new Date(point.createdAt.toDate ? point.createdAt.toDate() : point.createdAt).toLocaleString() : 'Tanggal tidak tersedia'}</small>
     <button class="delete-button bg-red-500 text-white px-4 py-2 rounded-md mt-2 hover:bg-red-600" style="color: white;">Hapus</button>
   `;
@@ -163,7 +183,7 @@ export class PointListView {
 
       const deleteButton = item.querySelector('.delete-button');
       deleteButton.addEventListener('click', (event) => {
-        event.stopPropagation();  
+        event.stopPropagation();
         if (confirm('Apakah Anda yakin ingin menghapus cerita ini?')) {
           this.presenter.onDeletePointClicked(point.id);
         }
@@ -229,15 +249,15 @@ export class PointListView {
     }
 
     points.forEach((point) => {
-      if (point.latitude && point.longitude) { 
-        L.marker([point.latitude, point.longitude]) 
+      if (point.latitude && point.longitude) {
+        L.marker([point.latitude, point.longitude])
           .addTo(this.mapReports)
           .bindPopup(`
             <strong>${point.description}</strong><br>
             <a href="http://www.google.com/maps/place/${point.latitude},${point.longitude}" target="_blank" rel="noopener">
               Lihat di Google Maps
             </a>
-          `);   
+          `);
       }
     });
   }
@@ -246,20 +266,52 @@ export class PointListView {
     this.currentPoint = point;
     const pointTitle = this.container.querySelector('#point-title');
     const pointDesc = this.container.querySelector('#point-description');
+    const pointType = this.container.querySelector('#point-type');
     const pointCreated = this.container.querySelector('#point-created');
     const mapModal = this.container.querySelector('#map-modal');
     const modalContent = this.container.querySelector('#modal-content');
+    const pointPhoto = this.container.querySelector('#point-photo');
+
+
+    pointPhoto.src = point.photoUrl;
+    pointPhoto.alt = `Foto dari ${point.description}`;
+
+    const mediaContainer = this.container.querySelector('#media-scroll-container');
+    const indicatorDots = this.container.querySelectorAll('.indicator-dot');
+
+    mediaContainer.addEventListener('scroll', () => {
+      const scrollPosition = mediaContainer.scrollLeft;
+      const containerWidth = mediaContainer.offsetWidth;
+
+      const activeIndex = Math.round(scrollPosition / containerWidth);
+
+      indicatorDots.forEach((dot, index) => {
+        dot.classList.toggle('active-dot', index === activeIndex);
+      });
+    });
 
     mapModal.style.display = 'flex';
     modalContent.focus();
 
-    pointTitle.textContent = point.description; 
-    pointDesc.textContent = point.description; 
-    pointCreated.textContent = `Dibuat: ${point.createdAt ? new Date(point.createdAt.toDate ? point.createdAt.toDate() : point.createdAt).toLocaleString() : 'Tanggal tidak tersedia'}`; 
+    const pointDetail = this.container.querySelector('#point-detail');
+
+    pointDetail.innerHTML = `
+      <p class="text-gray-700">${point.description}</p>
+      <p class="text-gray-700">
+        Jenis titik: <strong>${point.type}</strong>
+      </p>
+      <p class="text-gray-700">
+        Status:
+        <span class="inline-block px-2 py-1 rounded-full text-white text-xs font-semibold ${point.status === 'aktif' ? 'bg-green-500' : 'bg-red-500'}">
+          ${point.status === 'aktif' ? 'Aktif' : 'Tidak Aktif'}
+        </span>
+      </p>
+      <small class="text-gray-500">Dibuat: ${point.createdAt ? new Date(point.createdAt.toDate ? point.createdAt.toDate() : point.createdAt).toLocaleString() : 'Tanggal tidak tersedia'}</small>
+   `;
 
     if (this.map === null) {
       const mapEl = this.container.querySelector('#map');
-      this.map = L.map(mapEl).setView([point.latitude, point.longitude], 13); 
+      this.map = L.map(mapEl).setView([point.latitude, point.longitude], 13);
 
       const baseLayers = {
         "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -275,19 +327,19 @@ export class PointListView {
       baseLayers["OpenStreetMap"].addTo(this.map);
       L.control.layers(baseLayers).addTo(this.map);
     } else {
-      this.map.setView([point.latitude, point.longitude], 13); 
+      this.map.setView([point.latitude, point.longitude], 13);
     }
 
     this.map.eachLayer(layer => {
       if (layer instanceof L.Marker) this.map.removeLayer(layer);
     });
-    L.marker([point.latitude, point.longitude]).addTo(this.map) 
+    L.marker([point.latitude, point.longitude]).addTo(this.map)
       .bindPopup(`
         <strong>${point.description}</strong><br>
         <a href="http://www.google.com/maps/place/${point.latitude},${point.longitude}" target="_blank" rel="noopener">
           Lihat di Google Maps
         </a>
-      `) 
+      `)
       .openPopup();
   }
 }

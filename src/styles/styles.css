@@ -27,19 +27,20 @@
 
 #map-add {
   flex: 1 1 300px;
-  min-height: 300px; /* Ensures it doesn't collapse */
+  min-height: 300px; 
   width: 100%;
   border: 1px solid #ccc;
   border-radius: 8px;
   background: #f1f5f9;
 }
 
+
 :root {
   --primary: #ffffff;
-  --accent: #3b82f6;
-  --accent-dark: #2563eb;
-  --bg-light: #f8fafc;
-  --text-dark: #1f2937;
+  --accent: #22c55e;
+  --accent-dark: #15803d;
+  --bg-light: #ffffff;
+  --text-dark: #1e3a1c;
 }
 
 body {
@@ -89,7 +90,7 @@ input{
   padding: 0.5rem;
   font-size: 1rem;
   border-radius: 4px;
-  border: 1px solid #ccc;
+  border: 1px solid #a3b18a;
 }
 
 form textarea,
@@ -239,6 +240,18 @@ article img {
   font-weight: 500;
 }
 
+.indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background-color: #d1d5db;
+  transition: background-color 0.3s;
+}
+
+.active-dot {
+  background-color: #2563eb; 
+}
+
 .site-title {
   font-size: 2rem;
   font-weight: bold;
@@ -312,13 +325,12 @@ nav a:hover {
   border-radius: 2px;
 }
 
-/* Buat layar HP */
 @media (max-width: 639px) {
   .hamburger {
     display: flex;
   }
 
-  /* container nav hamburger */
+  
   .nav-links {
     display: none;
     position: absolute;
@@ -338,7 +350,6 @@ nav a:hover {
 }
 
 
-/* register-view */
 #side-photo {
   flex: 1;
   border-radius: 12px;
@@ -346,7 +357,6 @@ nav a:hover {
   min-height: 100%;
 }
 
-/* not found */
 .not-found-container {
   padding: 2rem;
   text-align: center;
@@ -378,7 +388,6 @@ nav a:hover {
   background-color: #2980b9;
 }
 
-/* Radio group container styling */
 form label {
   font-size: 1rem;
   font-weight: 500;
