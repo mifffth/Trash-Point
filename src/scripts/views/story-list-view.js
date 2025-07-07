@@ -42,6 +42,12 @@ export class PointListView {
   }
 
   renderPointList(points) {
+    points = points.slice().sort((a, b) => {
+      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+      return dateB - dateA;
+    });
+    
     this.container.innerHTML = `
         <div class="container mx-auto px-4">
           <a href="#point-list" class="skip-link">Lewati ke konten utama</a>
