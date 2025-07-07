@@ -5,12 +5,12 @@ export class PointListPresenter {
   constructor() {
     this.view = null;
     this.cachedPoints = [];
-  } 
+  }
 
   setView(view) {
-      this.view = view;
+    this.view = view;
   }
-  
+
   async onLoginClicked() {
     this.view.navigateTo('#/points');
   }
@@ -26,7 +26,7 @@ export class PointListPresenter {
       this.view.renderError('Gagal menghapus cerita: ' + error.message);
     }
   }
-  
+
   async onPageLoad() {
     // cek udah login/blm. Disable dulu
     // const token = getToken(); 
@@ -34,7 +34,7 @@ export class PointListPresenter {
     //   this.view.renderLogin();
     //   return;
     // }
-  
+
     this.view.renderLoading();
     try {
       this.cachedPoints = await fetchPoints();

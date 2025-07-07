@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { getToken } from '../models/auth-model';
 
 export class PointListView {
   constructor(container) {
@@ -117,7 +118,6 @@ export class PointListView {
                 <span class="indicator-dot"></span>
               </div>
 
-
               <div id="point-detail" style="padding: 1rem;" aria-live="polite">
                 <h3 id="point-title" class="font-bold mb-4"></h3>
                 <p id="point-description"></p>
@@ -169,25 +169,13 @@ export class PointListView {
         ${point.status === 'aktif' ? 'Aktif' : 'Tidak Aktif'}
       </span>
     </p>
-    <small class="text-gray-500">Dibuat: ${point.createdAt ? new Date(point.createdAt.toDate ? point.createdAt.toDate() : point.createdAt).toLocaleString() : 'Tanggal tidak tersedia'}</small>
-    <button class="delete-button bg-red-500 text-white px-4 py-2 rounded-md mt-2 hover:bg-red-600" style="color: white;">Hapus</button>
-  `;
+   `;
 
       item.style.cursor = 'pointer';
-      item.addEventListener('click', (event) => {
-        if (!event.target.classList.contains('delete-button')) {
-          this.presenter.onPointSelected(index);
-        }
+      item.addEventListener('click', () => {
+        this.presenter.onPointSelected(index);
       });
       listEl.appendChild(item);
-
-      const deleteButton = item.querySelector('.delete-button');
-      deleteButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        if (confirm('Apakah Anda yakin ingin menghapus cerita ini?')) {
-          this.presenter.onDeletePointClicked(point.id);
-        }
-      });
     });
 
     mapModal.addEventListener('click', e => {
@@ -264,14 +252,9 @@ export class PointListView {
 
   async renderPoint(point) {
     this.currentPoint = point;
-    const pointTitle = this.container.querySelector('#point-title');
-    const pointDesc = this.container.querySelector('#point-description');
-    const pointType = this.container.querySelector('#point-type');
-    const pointCreated = this.container.querySelector('#point-created');
     const mapModal = this.container.querySelector('#map-modal');
     const modalContent = this.container.querySelector('#modal-content');
     const pointPhoto = this.container.querySelector('#point-photo');
-
 
     pointPhoto.src = point.photoUrl;
     pointPhoto.alt = `Foto dari ${point.description}`;
@@ -308,6 +291,29 @@ export class PointListView {
       </p>
       <small class="text-gray-500">Dibuat: ${point.createdAt ? new Date(point.createdAt.toDate ? point.createdAt.toDate() : point.createdAt).toLocaleString() : 'Tanggal tidak tersedia'}</small>
    `;
+
+    const isLoggedIn = !!getToken();
+
+    if (isLoggedIn) {
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'modal-delete-button bg-red-600 text-white hover:bg-red-700 p-3 rounded-md shadow-lg';
+      deleteBtn.innerHTML = '<i class="fa-solid fa-trash" style="color: white;"></i>';
+      deleteBtn.style.position = 'absolute';
+      deleteBtn.style.bottom = '1rem';
+      deleteBtn.style.right = '1rem';
+      deleteBtn.setAttribute('aria-label', 'Hapus cerita ini');
+
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('Apakah Anda yakin ingin menghapus cerita ini?')) {
+          this.presenter.onDeletePointClicked(point.id);
+          const mapModal = this.container.querySelector('#map-modal');
+          mapModal.style.display = 'none';
+        }
+      });
+
+      modalContent.appendChild(deleteBtn);
+    }
 
     if (this.map === null) {
       const mapEl = this.container.querySelector('#map');

@@ -2,6 +2,7 @@ import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute, setCatchHandler } from 'workbox-routing';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { NetworkFirst, CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { ExpirationPlugin } from 'workbox-expiration';
 
 const manifest = self.__WB_MANIFEST;
 precacheAndRoute(manifest);
@@ -32,14 +33,28 @@ registerRoute(
 
 registerRoute(
   ({ url }) => url.origin === 'https://firebasestorage.googleapis.com',
-  new StaleWhileRevalidate({
-    cacheName: 'firebase-storage-images',
+  new CacheFirst({
+    cacheName: 'points-images',
     plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200],
+      new ExpirationPlugin({
+        maxEntries: 30, 
+        maxAgeSeconds: 30 * 24 * 60 * 60, 
       }),
     ],
-  })
+  }),
+);
+
+registerRoute(
+  ({ url }) => url.href.startsWith('https://firestore.googleapis.com'),
+  new StaleWhileRevalidate({
+    cacheName: 'firestore-data',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 30 * 24 * 60 * 60,
+      }),
+    ],
+  }),
 );
 
 registerRoute(
@@ -69,22 +84,12 @@ setCatchHandler(async ({ event }) => {
   return Response.error();
 });
 
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url.includes('/') && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow('/');
-      }
-    })
-  );
+self.addEventListener('install', () => {
+  console.log('Service Worker: Menginstall');
+  self.skipWaiting();
 });
 
-// Force activate & claim on install
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', () => self.clients.claim());
+self.addEventListener('activate', event => {
+  console.log('Service Worker: Mengaktifkan');
+  event.waitUntil(self.clients.claim());
+});

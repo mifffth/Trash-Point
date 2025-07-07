@@ -7,8 +7,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
-    publicPath: '/', 
-    clean: true, // bersihin dist, opsional
+    publicPath: '',
+    clean: true, 
   },
   module: {
     rules: [
@@ -21,6 +21,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'src/index.html'),
+      excludeChunks: ['sw'],
     }),
     new CopyWebpackPlugin({
       patterns: [
@@ -31,6 +32,10 @@ module.exports = {
         {
           from: path.resolve(__dirname, 'src/styles'),
           to: path.resolve(__dirname, 'dist/styles'),
+        },
+        {
+          from: path.resolve(__dirname, 'src/app.webmanifest'), 
+          to: path.resolve(__dirname, 'dist/app.webmanifest'),
         }
       ],
     }),

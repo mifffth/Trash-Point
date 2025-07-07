@@ -17,9 +17,8 @@ const main = document.querySelector('main');
 const navbar = document.getElementById('main-nav');
 const menuToggle = document.getElementById('menu-toggle');
 
-
 function renderView() {
-    let hash = window.location.hash || null;
+    let hash = window.location.hash || '#/';
 
     const token = localStorage.getItem('token');
     const loggedIn = !!token;
@@ -120,13 +119,15 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // if ("serviceWorker" in navigator) {
-    //     window.addEventListener("load", () => {
-    //       navigator.serviceWorker.register("/sw.bundle.js").then(() => {
-    //         console.log("Service Worker registered.");
-    //       });
-    //     });
-    //   } else {
-    //     console.log("Service Worker is not supported by this browser.");
-    //   }
+    if ('serviceWorker' in navigator) { 
+        window.addEventListener('load', () => { 
+            navigator.serviceWorker.register('./sw.bundle.js') 
+                .then(registration => { 
+                    console.log('SW registered:', registration); 
+                })
+                .catch(error => { 
+                    console.error('SW registration failed:', error); 
+                });
+        }); 
+    }
 });
