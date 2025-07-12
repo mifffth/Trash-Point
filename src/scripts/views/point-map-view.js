@@ -1,5 +1,5 @@
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 export class PointMapView {
   constructor(container) {
@@ -8,8 +8,9 @@ export class PointMapView {
     this.map = null;
 
     L.Marker.prototype.options.icon = L.icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+      iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+      shadowUrl:
+        "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
       iconSize: [25, 41],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
@@ -23,7 +24,7 @@ export class PointMapView {
   }
 
   render() {
-    document.body.classList.add('map-view-active');
+    document.body.classList.add("map-view-active");
     this.container.innerHTML = `
       <div id="map-container"></div>
     `;
@@ -31,7 +32,7 @@ export class PointMapView {
   }
 
   destroy() {
-    document.body.classList.remove('map-view-active');
+    document.body.classList.remove("map-view-active");
 
     if (this.map) {
       this.map.remove();
@@ -39,28 +40,39 @@ export class PointMapView {
   }
 
   initMap() {
-    this.map = L.map('map-container').setView([-7.722365404293603, 110.3582296767887], 15);
+    this.map = L.map("map-container").setView(
+      [-7.722365404293603, 110.3582296767887],
+      15
+    );
     const baseLayers = {
-      "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-      }),
-      "OpenTopoMap": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data: © OpenTopoMap contributors'
-      }),
-      "Esri World Imagery": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-      })
+      OpenStreetMap: L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          attribution: "&copy; OpenStreetMap contributors",
+        }
+      ),
+      OpenTopoMap: L.tileLayer(
+        "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+        {
+          attribution: "Map data: © OpenTopoMap contributors",
+        }
+      ),
+      "Esri World Imagery": L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+          attribution:
+            "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+        }
+      ),
     };
     baseLayers["OpenStreetMap"].addTo(this.map);
     L.control.layers(baseLayers).addTo(this.map);
   }
 
   displayPoints(points) {
-    points.forEach(point => {
+    points.forEach((point) => {
       if (point.latitude && point.longitude) {
-        L.marker([point.latitude, point.longitude])
-          .addTo(this.map)
-          .bindPopup(`
+        L.marker([point.latitude, point.longitude]).addTo(this.map).bindPopup(`
             <strong>${point.description}</strong><br>
             <a href="https://www.google.com/maps/place/${point.latitude},${
           point.longitude
@@ -69,7 +81,8 @@ export class PointMapView {
                rel="noopener">
               ${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}
             </a>
-          `);}
+          `);
+      }
     });
   }
 

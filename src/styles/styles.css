@@ -150,6 +150,31 @@ article img {
   margin-bottom: 1rem;
 }
 
+.custom-map-button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  margin-top: -10px;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  display: block;
+  width: 40px;
+  height: 26px;
+  line-height: 26px;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+  font: 18px/26px "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+.custom-map-button:hover {
+  background-color: #f4f4f4;
+}
+
+.custom-map-button:active {
+  background-color: #e6e6e6;
+}
+
 .skip-link,
 .skip-login-link {
   position: absolute;

@@ -55,89 +55,75 @@ export class PointListView {
 
     this.container.innerHTML = `
         <div class="container mx-auto px-4">
-          <a href="#point-list" class="skip-link">Lewati ke konten utama</a>
+            <a href="#point-list" class="skip-link">Lewati ke konten utama</a>
 
-          <h2 class="font-bold mb-4 text-xl" id="point-list-heading" style="text-align: center">
-            Daftar Titik
-          </h2>
+            <h2 class="font-bold mb-4 text-xl text-center" id="point-list-heading">
+                Daftar Titik
+            </h2>
 
-          <section>
-            <div class="reports-map-container">
-              <div id="map-reports" class="reports-map-container"></div>
-              <div id="map-loading-container"></div>
-              <a href="#/map" class="full-map-link">Lihat Peta Penuh</a>
-            </div>
-          </section>
-
-          <div
-            id="point-list"
-            tabindex="-1"
-            role="main"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
-            role="list"
-            aria-labelledby="point-list-heading"
-          ></div>
-
-          <h2 id="modal-title" class="sr-only">Detail Cerita</h2>
-
-          <div
-            id="map-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-title"
-            aria-describedby="point-description point-created"
-            style="
-              display: none;
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background: rgba(0, 0, 0, 0.7);
-              justify-content: center;
-              align-items: center;
-              z-index: 1000;
-            "
-          >
-            <div
-              id="modal-content"
-              tabindex="-1"
-              aria-label="Detail lokasi cerita dalam peta"
-              style="
-                width: 90%;
-                max-width: 800px;
-                background: #fff;
-                border-radius: 8px;
-                overflow: hidden;
-                position: relative;
-                outline: none;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-              "
-            >
-              <div id="media-scroll-container" 
-                  style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 300px;">
-                <img id="point-photo" 
-                    style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start;" 
-                    alt="Foto laporan" />
-                <div id="map" 
-                    style="width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start;" 
-                    aria-hidden="true">
+            <div id="map-reports">
+                <div class="leaflet-bottom leaflet-right">
+                    <div class="leaflet-control custom-map-button">
+                        <a href="#/map" title="Lihat peta penuh" aria-label="Lihat peta penuh">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </a>
+                    </div>
                 </div>
-              </div>
-
-              <div id="media-indicator" style="display: flex; justify-content: center; gap: 8px; margin-top: 8px;">
-                <span class="indicator-dot active-dot"></span>
-                <span class="indicator-dot"></span>
-              </div>
-
-              <div id="point-detail" style="padding: 1rem;" aria-live="polite">
-                <h3 id="point-title" class="font-bold mb-4"></h3>
-                <p id="point-description"></p>
-                <p id="point-type"></p>
-                <small id="point-created"></small>
-              </div>
             </div>
-          </div>
+
+            <div id="map-loading-container"></div>
+
+            <div id="point-list" tabindex="-1" role="main" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+                role="list" aria-labelledby="point-list-heading">
+            </div>
+        </div>
+        <h2 id="modal-title" class="sr-only">Detail Cerita</h2>
+
+        <div id="map-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+            aria-describedby="point-description point-created" style="
+                  display: none;
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  background: rgba(0, 0, 0, 0.7);
+                  justify-content: center;
+                  align-items: center;
+                  z-index: 1000;
+              ">
+            <div id="modal-content" tabindex="-1" aria-label="Detail lokasi cerita dalam peta" style="
+                    width: 90%;
+                    max-width: 800px;
+                    background: #fff;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    position: relative;
+                    outline: none;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+                ">
+                <div id="media-scroll-container"
+                    style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 300px;">
+                    <img id="point-photo"
+                        style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start;"
+                        alt="Foto laporan" />
+                    <div id="map" style="width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start;"
+                        aria-hidden="true">
+                    </div>
+                </div>
+
+                <div id="media-indicator" style="display: flex; justify-content: center; gap: 8px; margin-top: 8px;">
+                    <span class="indicator-dot active-dot"></span>
+                    <span class="indicator-dot"></span>
+                </div>
+
+                <div id="point-detail" style="padding: 1rem;" aria-live="polite">
+                    <h3 id="point-title" class="font-bold mb-4"></h3>
+                    <p id="point-description"></p>
+                    <p id="point-type"></p>
+                    <small id="point-created"></small>
+                </div>
+            </div>
         </div>
 `;
 
@@ -168,7 +154,7 @@ export class PointListView {
     points.forEach((point, index) => {
       const item = document.createElement("article");
       item.className =
-        "bg-white rounded-xl shadow-md overflow-hidden p-4 flex flex-col gap-2 text-sm hover:shadow-lg transition-shadow duration-200";
+        "bg-white rounded-xl shadow-2xl overflow-hidden p-4 flex flex-col gap-2 text-sm";
       item.setAttribute("tabindex", "0");
       item.innerHTML = `
     <img src="${point.photoUrl}" 
