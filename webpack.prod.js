@@ -33,9 +33,10 @@ module.exports = merge(common, {
   plugins: [
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
-    new InjectManifest({
-      swSrc: path.resolve(__dirname, 'src/scripts/sw.js'),
-      swDest: 'sw.bundle.js',
-    }),
+    // commented so netlify will always load latest version on other's device too
+    // new InjectManifest({
+    //   swSrc: path.resolve(__dirname, 'src/scripts/sw.js'),
+    //   swDest: 'sw.bundle.js',
+    // }),
   ],
 });

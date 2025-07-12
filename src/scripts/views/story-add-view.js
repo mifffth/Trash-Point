@@ -193,11 +193,11 @@ export class PointAddView {
     const locateButton = L.control({ position: "topright" });
     locateButton.onAdd = function () {
       const button = L.DomUtil.create("button", "leaflet-bar");
-      button.innerHTML = "📍";
+      button.innerHTML = '<i class="fa-solid fa-location-crosshairs fa-xl"></i>';
       button.style.backgroundColor = "white";
       button.style.padding = "8px";
-      button.style.borderRadius = "12px";
-      button.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
+      button.style.borderRadius = "4px";
+      button.style.boxShadow = "0 4px 12px rgba(68, 55, 55, 0.1)";
       button.onclick = () => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(

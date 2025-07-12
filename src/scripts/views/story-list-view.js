@@ -27,7 +27,7 @@ export class PointListView {
   }
 
   showLocationError() {
-    alert("Cerita ini tidak memiliki data lokasi.");
+    alert("Laporan ini tidak memiliki data lokasi.");
   }
 
   renderLoading() {
@@ -77,7 +77,7 @@ export class PointListView {
                 role="list" aria-labelledby="point-list-heading">
             </div>
         </div>
-        <h2 id="modal-title" class="sr-only">Detail Cerita</h2>
+        <h2 id="modal-title" class="sr-only">Detail Laporan</h2>
 
         <div id="map-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
             aria-describedby="point-description point-created" style="
@@ -353,11 +353,11 @@ export class PointListView {
       deleteBtn.style.position = "absolute";
       deleteBtn.style.bottom = "1rem";
       deleteBtn.style.right = "1rem";
-      deleteBtn.setAttribute("aria-label", "Hapus cerita ini");
+      deleteBtn.setAttribute("aria-label", "Hapus laporan ini");
 
       deleteBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        if (confirm("Apakah Anda yakin ingin menghapus cerita ini?")) {
+        if (confirm("Apakah Anda yakin ingin menghapus laporan ini?")) {
           this.presenter.onDeletePointClicked(point.id);
           const mapModal = this.container.querySelector("#map-modal");
           mapModal.style.display = "none";

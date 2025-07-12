@@ -14,6 +14,10 @@ export class LoginPresenter {
     this.view.render();
   }
 
+  async onRegisterClicked() {
+    this.view.navigateTo('#/register');
+  }
+  
   async onLoginSubmit(email, password) {
     this.view.showLoadingOverlay("Tunggu sebentar...");
     try {
