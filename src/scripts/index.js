@@ -21,7 +21,28 @@ const navbar = document.getElementById("main-nav");
 const menuToggle = document.getElementById("menu-toggle");
 
 function renderView() {
+  const footer = document.getElementById("site-footer");
   let hash = window.location.hash || "#/";
+
+  if (hash === "#/map") {
+    if (footer) footer.style.display = "none";
+  } else {
+    if (footer) footer.style.display = "block";
+  }
+
+  const navLinks = document.querySelectorAll("#main-nav a");
+  navLinks.forEach((link) => {
+    link.classList.remove("nav-active");
+  });
+
+  const activeHash = hash === "#/" || hash === "" ? "#/stories" : hash;
+
+  const activeLink = document.querySelector(
+    `#main-nav a[href="${activeHash}"]`
+  );
+  if (activeLink && activeHash !== "#/add") {
+    activeLink.classList.add("nav-active");
+  }
 
   const token = localStorage.getItem("token");
   const loggedIn = !!token;

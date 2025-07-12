@@ -24,19 +24,10 @@ export class PointMapView {
   }
 
   render() {
-    document.body.classList.add("map-view-active");
     this.container.innerHTML = `
       <div id="map-container"></div>
     `;
     this.initMap();
-  }
-
-  destroy() {
-    document.body.classList.remove("map-view-active");
-
-    if (this.map) {
-      this.map.remove();
-    }
   }
 
   initMap() {
