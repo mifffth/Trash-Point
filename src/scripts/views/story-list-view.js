@@ -1,6 +1,6 @@
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { getToken } from '../models/auth-model';
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { getToken } from "../models/auth-model";
 
 export class PointListView {
   constructor(container) {
@@ -11,8 +11,9 @@ export class PointListView {
     this.mapReports = null;
 
     L.Marker.prototype.options.icon = L.icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+      iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+      shadowUrl:
+        "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
       iconSize: [25, 41],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
@@ -26,11 +27,11 @@ export class PointListView {
   }
 
   showLocationError() {
-    alert('Cerita ini tidak memiliki data lokasi.');
+    alert("Cerita ini tidak memiliki data lokasi.");
   }
 
   renderLoading() {
-    this.container.innerHTML = '<h2>Memuat cerita...</h2>';
+    this.container.innerHTML = "<h2>Memuat laporan...</h2>";
   }
 
   renderError(message) {
@@ -43,23 +44,28 @@ export class PointListView {
 
   renderPointList(points) {
     points = points.slice().sort((a, b) => {
-      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+      const dateA = a.createdAt?.toDate
+        ? a.createdAt.toDate()
+        : new Date(a.createdAt);
+      const dateB = b.createdAt?.toDate
+        ? b.createdAt.toDate()
+        : new Date(b.createdAt);
       return dateB - dateA;
     });
-    
+
     this.container.innerHTML = `
         <div class="container mx-auto px-4">
           <a href="#point-list" class="skip-link">Lewati ke konten utama</a>
 
           <h2 class="font-bold mb-4 text-xl" id="point-list-heading" style="text-align: center">
-            Daftar Cerita
+            Daftar Titik
           </h2>
 
           <section>
             <div class="reports-map-container">
               <div id="map-reports" class="reports-map-container"></div>
               <div id="map-loading-container"></div>
+              <a href="#/map" class="full-map-link">Lihat Peta Penuh</a>
             </div>
           </section>
 
@@ -136,7 +142,8 @@ export class PointListView {
 `;
 
     if (!points.length) {
-      this.container.innerHTML = '<h2 class="font-bold mb-4 text-xl">Belum ada cerita</h2>';
+      this.container.innerHTML =
+        '<h2 class="font-bold mb-4 text-xl">Belum ada laporan</h2>';
       if (this.mapReports) {
         this.mapReports.remove();
         this.mapReports = null;
@@ -146,10 +153,10 @@ export class PointListView {
 
     const mainContent = document.querySelector("#point-list");
     const skipLink = document.querySelector(".skip-link");
-    const listEl = this.container.querySelector('#point-list');
-    const mapModal = this.container.querySelector('#map-modal');
-    const modalContent = this.container.querySelector('#modal-content');
-    const mapEl = document.querySelector('#map-reports');
+    const listEl = this.container.querySelector("#point-list");
+    const mapModal = this.container.querySelector("#map-modal");
+    const modalContent = this.container.querySelector("#modal-content");
+    const mapEl = document.querySelector("#map-reports");
 
     skipLink.addEventListener("click", function (event) {
       event.preventDefault();
@@ -159,49 +166,54 @@ export class PointListView {
     });
 
     points.forEach((point, index) => {
-      const item = document.createElement('article');
-      item.className = 'bg-white rounded-xl shadow-md overflow-hidden p-4 flex flex-col gap-2 text-sm hover:shadow-lg transition-shadow duration-200';
-      item.setAttribute('tabindex', '0');
+      const item = document.createElement("article");
+      item.className =
+        "bg-white rounded-xl shadow-md overflow-hidden p-4 flex flex-col gap-2 text-sm hover:shadow-lg transition-shadow duration-200";
+      item.setAttribute("tabindex", "0");
       item.innerHTML = `
-    <img src="${point.photoUrl}"class="w-full h-auto rounded-md cursor-pointer object-cover min-h-100 max-h-100 min-w-100" loading="lazy" />
-    <p class="text-gray-700">${point.description}</p>
-    <p class="text-gray-700">
-      Jenis titik: <strong>${point.type}</strong>
-    </p>
+    <img src="${point.photoUrl}" 
+     class="cursor-pointer object-cover w-full h-auto max-h-100 max-w-100" 
+     loading="lazy" /><p class="text-gray-700">${point.description}</p>
+    <p class="text-gray-700">Jenis titik: <strong class="uppercase">${
+      point.type
+    }</strong></p>
     <p class="text-gray-700">
       Status:
-      <span class="inline-block px-2 py-1 rounded-full text-white text-xs font-semibold ${point.status === 'aktif' ? 'bg-green-500' : 'bg-red-500'
-        }">
-        ${point.status === 'aktif' ? 'Aktif' : 'Tidak Aktif'}
+      <span class="inline-block px-2 py-1 rounded-full text-white text-xs font-semibold uppercase ${
+        point.status === "aktif" ? "bg-green-500" : "bg-red-500"
+      }">
+        ${point.status === "aktif" ? "Aktif" : "Tidak Aktif"}
       </span>
     </p>
    `;
 
-      item.style.cursor = 'pointer';
-      item.addEventListener('click', () => {
-        this.presenter.onPointSelected(index);
+      item.style.cursor = "pointer";
+      item.addEventListener("click", () => {
+        this.presenter.onPointSelected(point);
       });
       listEl.appendChild(item);
     });
 
-    mapModal.addEventListener('click', e => {
+    mapModal.addEventListener("click", (e) => {
       if (e.target === mapModal) {
-        mapModal.style.display = 'none';
+        mapModal.style.display = "none";
       }
     });
 
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && mapModal.style.display === 'flex') {
-        mapModal.style.display = 'none';
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && mapModal.style.display === "flex") {
+        mapModal.style.display = "none";
       }
     });
 
-    mapModal.addEventListener('keydown', e => {
-      const focusableElements = modalContent.querySelectorAll('button, [tabindex]:not([tabindex="-1"])');
+    mapModal.addEventListener("keydown", (e) => {
+      const focusableElements = modalContent.querySelectorAll(
+        'button, [tabindex]:not([tabindex="-1"])'
+      );
       const firstEl = focusableElements[0];
       const lastEl = focusableElements[focusableElements.length - 1];
 
-      if (e.key === 'Tab') {
+      if (e.key === "Tab") {
         if (e.shiftKey) {
           if (document.activeElement === firstEl) {
             e.preventDefault();
@@ -216,40 +228,60 @@ export class PointListView {
       }
     });
 
-    if (this.mapReports && this.mapReports.getContainer() && !this.mapReports.getContainer().isConnected) {
+    if (
+      this.mapReports &&
+      this.mapReports.getContainer() &&
+      !this.mapReports.getContainer().isConnected
+    ) {
       this.mapReports.remove();
       this.mapReports = null;
     }
 
     if (!this.mapReports) {
-      this.mapReports = L.map(mapEl).setView([-2.5, 118], 5);
+      this.mapReports = L.map(mapEl).setView(
+        [-7.721256721020204, 110.35888839226011],
+        15
+      );
       const baseLayers = {
-        "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap'
-        }),
-        "OpenTopoMap": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-          attribution: 'Map data: © OpenTopoMap contributors'
-        }),
-        "Esri World Imagery": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-        })
+        OpenStreetMap: L.tileLayer(
+          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          {
+            attribution: "© OpenStreetMap",
+          }
+        ),
+        OpenTopoMap: L.tileLayer(
+          "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+          {
+            attribution: "Map data: © OpenTopoMap contributors",
+          }
+        ),
+        "Esri World Imagery": L.tileLayer(
+          "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          {
+            attribution:
+              "Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+          }
+        ),
       };
       baseLayers["OpenStreetMap"].addTo(this.mapReports);
       L.control.layers(baseLayers).addTo(this.mapReports);
     } else {
-      this.mapReports.eachLayer(layer => {
+      this.mapReports.eachLayer((layer) => {
         if (layer instanceof L.Marker) this.mapReports.removeLayer(layer);
       });
     }
 
     points.forEach((point) => {
       if (point.latitude && point.longitude) {
-        L.marker([point.latitude, point.longitude])
-          .addTo(this.mapReports)
+        L.marker([point.latitude, point.longitude]).addTo(this.mapReports)
           .bindPopup(`
             <strong>${point.description}</strong><br>
-            <a href="http://www.google.com/maps/place/${point.latitude},${point.longitude}" target="_blank" rel="noopener">
-              Lihat di Google Maps
+            <a href="https://www.google.com/maps/place/${point.latitude},${
+          point.longitude
+        }" 
+               target="_blank" 
+               rel="noopener">
+              ${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}
             </a>
           `);
       }
@@ -258,31 +290,47 @@ export class PointListView {
 
   async renderPoint(point) {
     this.currentPoint = point;
-    const mapModal = this.container.querySelector('#map-modal');
-    const modalContent = this.container.querySelector('#modal-content');
-    const pointPhoto = this.container.querySelector('#point-photo');
+    const mapModal = this.container.querySelector("#map-modal");
+    const modalContent = this.container.querySelector("#modal-content");
+    const pointPhoto = this.container.querySelector("#point-photo");
 
     pointPhoto.src = point.photoUrl;
     pointPhoto.alt = `Foto dari ${point.description}`;
 
-    const mediaContainer = this.container.querySelector('#media-scroll-container');
-    const indicatorDots = this.container.querySelectorAll('.indicator-dot');
+    const mediaContainer = this.container.querySelector(
+      "#media-scroll-container"
+    );
+    const indicatorDots = this.container.querySelectorAll(".indicator-dot");
 
-    mediaContainer.addEventListener('scroll', () => {
+    mediaContainer.addEventListener("scroll", () => {
       const scrollPosition = mediaContainer.scrollLeft;
       const containerWidth = mediaContainer.offsetWidth;
 
       const activeIndex = Math.round(scrollPosition / containerWidth);
 
       indicatorDots.forEach((dot, index) => {
-        dot.classList.toggle('active-dot', index === activeIndex);
+        dot.classList.toggle("active-dot", index === activeIndex);
       });
     });
 
-    mapModal.style.display = 'flex';
+    indicatorDots.forEach((dot, index) => {
+      dot.addEventListener("click", () => {
+        mediaContainer.scrollTo({
+          left: mediaContainer.offsetWidth * index,
+          behavior: "smooth",
+        });
+      });
+    });
+
+    const mapEl = this.container.querySelector("#map");
+    mapEl.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+    });
+
+    mapModal.style.display = "flex";
     modalContent.focus();
 
-    const pointDetail = this.container.querySelector('#point-detail');
+    const pointDetail = this.container.querySelector("#point-detail");
 
     pointDetail.innerHTML = `
       <p class="text-gray-700">${point.description}</p>
@@ -291,30 +339,42 @@ export class PointListView {
       </p>
       <p class="text-gray-700">
         Status:
-        <span class="inline-block px-2 py-1 rounded-full text-white text-xs font-semibold ${point.status === 'aktif' ? 'bg-green-500' : 'bg-red-500'}">
-          ${point.status === 'aktif' ? 'Aktif' : 'Tidak Aktif'}
+        <span class="inline-block px-2 py-1 rounded-full text-white text-xs font-semibold ${
+          point.status === "aktif" ? "bg-green-500" : "bg-red-500"
+        }">
+          ${point.status === "aktif" ? "Aktif" : "Tidak Aktif"}
         </span>
       </p>
-      <small class="text-gray-500">Dibuat: ${point.createdAt ? new Date(point.createdAt.toDate ? point.createdAt.toDate() : point.createdAt).toLocaleString() : 'Tanggal tidak tersedia'}</small>
+      <small class="text-gray-500">Dibuat: ${
+        point.createdAt
+          ? new Date(
+              point.createdAt.toDate
+                ? point.createdAt.toDate()
+                : point.createdAt
+            ).toLocaleString()
+          : "Tanggal tidak tersedia"
+      }</small>
    `;
 
     const isLoggedIn = !!getToken();
 
     if (isLoggedIn) {
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'modal-delete-button bg-red-600 text-white hover:bg-red-700 p-3 rounded-md shadow-lg';
-      deleteBtn.innerHTML = '<i class="fa-solid fa-trash" style="color: white;"></i>';
-      deleteBtn.style.position = 'absolute';
-      deleteBtn.style.bottom = '1rem';
-      deleteBtn.style.right = '1rem';
-      deleteBtn.setAttribute('aria-label', 'Hapus cerita ini');
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className =
+        "modal-delete-button bg-red-600 text-white hover:bg-red-700 p-3 rounded-md shadow-lg";
+      deleteBtn.innerHTML =
+        '<i class="fa-solid fa-trash" style="color: white;"></i>';
+      deleteBtn.style.position = "absolute";
+      deleteBtn.style.bottom = "1rem";
+      deleteBtn.style.right = "1rem";
+      deleteBtn.setAttribute("aria-label", "Hapus cerita ini");
 
-      deleteBtn.addEventListener('click', (e) => {
+      deleteBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        if (confirm('Apakah Anda yakin ingin menghapus cerita ini?')) {
+        if (confirm("Apakah Anda yakin ingin menghapus cerita ini?")) {
           this.presenter.onDeletePointClicked(point.id);
-          const mapModal = this.container.querySelector('#map-modal');
-          mapModal.style.display = 'none';
+          const mapModal = this.container.querySelector("#map-modal");
+          mapModal.style.display = "none";
         }
       });
 
@@ -322,19 +382,29 @@ export class PointListView {
     }
 
     if (this.map === null) {
-      const mapEl = this.container.querySelector('#map');
+      const mapEl = this.container.querySelector("#map");
       this.map = L.map(mapEl).setView([point.latitude, point.longitude], 13);
 
       const baseLayers = {
-        "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap'
-        }),
-        "OpenTopoMap": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-          attribution: 'Map data: © OpenTopoMap contributors'
-        }),
-        "Esri World Imagery": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-        })
+        OpenStreetMap: L.tileLayer(
+          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          {
+            attribution: "© OpenStreetMap",
+          }
+        ),
+        OpenTopoMap: L.tileLayer(
+          "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+          {
+            attribution: "Map data: © OpenTopoMap contributors",
+          }
+        ),
+        "Esri World Imagery": L.tileLayer(
+          "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          {
+            attribution:
+              "Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+          }
+        ),
       };
       baseLayers["OpenStreetMap"].addTo(this.map);
       L.control.layers(baseLayers).addTo(this.map);
@@ -342,16 +412,23 @@ export class PointListView {
       this.map.setView([point.latitude, point.longitude], 13);
     }
 
-    this.map.eachLayer(layer => {
+    this.map.eachLayer((layer) => {
       if (layer instanceof L.Marker) this.map.removeLayer(layer);
     });
-    L.marker([point.latitude, point.longitude]).addTo(this.map)
-      .bindPopup(`
+    L.marker([point.latitude, point.longitude])
+      .addTo(this.map)
+      .bindPopup(
+        `
         <strong>${point.description}</strong><br>
-        <a href="http://www.google.com/maps/place/${point.latitude},${point.longitude}" target="_blank" rel="noopener">
-          Lihat di Google Maps
+        <a href="https://www.google.com/maps/place/${point.latitude},${
+          point.longitude
+        }" 
+          target="_blank" 
+          rel="noopener">
+          ${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}
         </a>
-      `)
+      `
+      )
       .openPopup();
   }
 }

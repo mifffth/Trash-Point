@@ -44,14 +44,13 @@ export class PointListPresenter {
     }
   }
 
-  async onPointSelected(index) {
-    const point = this.cachedPoints[index];
+  async onPointSelected(point) {
     if (!point.latitude || !point.longitude) {
       this.view.showLocationError();
     } else {
       this.view.renderPoint(point);
     }
-  }
+  }  
 }
 
 

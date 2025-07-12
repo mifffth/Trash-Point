@@ -5,12 +5,15 @@ import { RegisterView } from './views/register-view.js';
 import { PointListView } from './views/story-list-view.js';
 import { PointAddView } from './views/story-add-view.js';
 import { NotFoundView } from './views/not-found-view.js';
+import { PointMapView } from './views/point-map-view.js';
 
 import { LoginPresenter } from './presenters/login-presenter.js';
 import { RegisterPresenter } from './presenters/register-presenter.js';
 import { PointListPresenter } from './presenters/story-list-presenter.js';
 import { PointAddPresenter } from './presenters/story-add-presenter.js';
 import { NotFoundPresenter } from './presenters/not-found-presenter.js';
+import { PointMapPresenter } from './presenters/point-map-presenter.js';
+
 import { updateAuthUI } from './utils/auth-ui.js';
 
 const main = document.querySelector('main');
@@ -22,7 +25,7 @@ function renderView() {
 
     const token = localStorage.getItem('token');
     const loggedIn = !!token;
-    if (!loggedIn && !['#/login', '#/logout', '#/register', '#/stories'].includes(hash)) {
+    if (!loggedIn && !['#/login', '#/logout', '#/register', '#/stories', '#/map'].includes(hash)) {
         alert('Anda harus masuk terlebih dahulu!');
         window.location.hash = '#/login';
         return;
@@ -44,6 +47,10 @@ function renderView() {
             case '#/stories':
                 view = new PointListView(main);
                 presenter = new PointListPresenter();
+                break;
+            case '#/map':
+                view = new PointMapView(main);
+                presenter = new PointMapPresenter();
                 break;
             case '#/add':
                 view = new PointAddView(main);

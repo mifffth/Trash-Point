@@ -1,7 +1,7 @@
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../API/firebase.js';
-const auth = getAuth(app);
 
+const auth = getAuth(app);
 const TOKEN_KEY = 'token';
 
 export async function loginUser(email, password) {
