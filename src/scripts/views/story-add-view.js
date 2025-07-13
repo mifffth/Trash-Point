@@ -17,7 +17,7 @@ export class PointAddView {
 
     <article id="form-map-wrapper"
             style="background: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); width: 100%; max-width: 960px; display: flex; flex-direction: column; justify-content: center; margin: 0 auto;">
-      <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Tambah Titik</h2>
+      <h2 class="font-bold mb-4 text-xl text-center">Tambah Titik</h2>
 
       <div class="form-map-wrapper" style="display: flex; flex-wrap: wrap; gap: 2rem;">
         
@@ -193,7 +193,7 @@ export class PointAddView {
     const locateButton = L.control({ position: "topright" });
     locateButton.onAdd = function () {
       const button = L.DomUtil.create("button", "leaflet-bar");
-      button.innerHTML = '<i class="fa-solid fa-location-crosshairs fa-xl"></i>';
+      button.innerHTML = '<i class="fa-solid fa-crosshairs" style="font-size: 27px;"></i>';
       button.style.backgroundColor = "white";
       button.style.padding = "8px";
       button.style.borderRadius = "4px";

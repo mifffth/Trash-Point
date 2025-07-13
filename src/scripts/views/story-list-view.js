@@ -60,16 +60,8 @@ export class PointListView {
             <h2 class="font-bold mb-4 text-xl text-center" id="point-list-heading">
                 Daftar Titik
             </h2>
-
-            <div id="map-reports">
-                <div class="leaflet-bottom leaflet-right">
-                    <div class="leaflet-control custom-map-button">
-                        <a href="#/map" title="Lihat peta penuh" aria-label="Lihat peta penuh">
-                            <i class="fa-solid fa-map-location-dot"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            
+            <div id="map-reports" style="height: 400px; border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem;"></div>
 
             <div id="map-loading-container"></div>
 
@@ -251,10 +243,27 @@ export class PointListView {
       };
       baseLayers["OpenStreetMap"].addTo(this.mapReports);
       L.control.layers(baseLayers).addTo(this.mapReports);
-    } else {
-      this.mapReports.eachLayer((layer) => {
-        if (layer instanceof L.Marker) this.mapReports.removeLayer(layer);
-      });
+
+      const mapsButton = L.control({ position: "topright" });
+      mapsButton.onAdd = function () {
+        const button = L.DomUtil.create("button", "leaflet-bar");
+        button.innerHTML =
+          '<i class="fa-solid fa-map" style="font-size: 24.5px;"></i>';
+        button.setAttribute("aria-label", "Temukan lokasi saya");
+        button.style.backgroundColor = "white";
+        button.style.padding = "8px";
+        button.style.borderRadius = "4px";
+        button.style.boxShadow = "0 4px 12px rgba(68, 55, 55, 0.1)";
+        button.style.cursor = "pointer";
+
+        button.onclick = () => {
+          this.presenter.onMapButtonClicked();
+        };
+
+        return button;
+      }.bind(this);
+
+      mapsButton.addTo(this.mapReports);
     }
 
     points.forEach((point) => {

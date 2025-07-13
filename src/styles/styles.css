@@ -159,33 +159,6 @@ article img {
   flex: 1;
 }
 
-.custom-map-button {
-  background-color: #ffffff;
-  border-radius: 4px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease, transform 0.15s ease;
-}
-
-.custom-map-button a {
-  color: #0f172a;
-  font-size: 1.25rem; 
-  text-decoration: none;
-}
-
-.custom-map-button:hover {
-  background-color: #e2e8f0;
-  transform: scale(1.05);
-}
-
-.custom-map-button:active {
-  background-color: #cbd5e1;
-  transform: scale(0.95);
-}
-
 .skip-link,
 .skip-login-link {
   position: absolute;

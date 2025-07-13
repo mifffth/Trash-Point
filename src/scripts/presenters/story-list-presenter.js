@@ -50,7 +50,11 @@ export class PointListPresenter {
     } else {
       this.view.renderPoint(point);
     }
-  }  
+  }
+  
+  async onMapButtonClicked() {
+    this.view.navigateTo('#/map');
+  }
 }
 
 

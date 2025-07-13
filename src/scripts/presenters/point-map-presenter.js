@@ -18,4 +18,7 @@ export class PointMapPresenter {
       this.view.renderError(error.message);
     }
   }
+  async onListButtonClicked() {
+    this.view.navigateTo('#/stories');
+  }
 }

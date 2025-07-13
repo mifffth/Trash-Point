@@ -30,6 +30,10 @@ export class PointMapView {
     this.initMap();
   }
 
+  navigateTo(hash) {
+    window.location.hash = hash;
+  }
+
   initMap() {
     this.map = L.map("map-container").setView(
       [-7.722365404293603, 110.3582296767887],
@@ -58,6 +62,26 @@ export class PointMapView {
     };
     baseLayers["OpenStreetMap"].addTo(this.map);
     L.control.layers(baseLayers).addTo(this.map);
+
+    const listButton = L.control({ position: "topright" });
+    listButton.onAdd = function () {
+      const button = L.DomUtil.create("button", "leaflet-bar");
+      button.innerHTML = '<i class="fa-solid fa-list-ul" style="font-size: 27px;"></i>';
+      button.setAttribute("aria-label", "Lihat daftar laporan");
+      button.style.backgroundColor = "white";
+      button.style.padding = "8px";
+      button.style.borderRadius = "4px";
+      button.style.boxShadow = "0 4px 12px rgba(68, 55, 55, 0.1)";
+      button.style.cursor = "pointer";
+
+      button.onclick = () => {
+        this.presenter.onListButtonClicked();
+      };
+
+      return button;
+    }.bind(this); 
+
+    listButton.addTo(this.map);
   }
 
   displayPoints(points) {
