@@ -20,10 +20,10 @@ export class PointListPresenter {
       await deletePoint(pointId);
       this.cachedPoints = await fetchPoints();
       this.view.renderPointList(this.cachedPoints);
-      alert('Cerita berhasil dihapus.');
+      alert('Laporan berhasil dihapus.');
     } catch (error) {
       console.error('Error deleting point:', error);
-      this.view.renderError('Gagal menghapus cerita: ' + error.message);
+      this.view.renderError('Gagal menghapus laporan: ' + error.message);
     }
   }
 
