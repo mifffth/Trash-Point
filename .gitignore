@@ -68,7 +68,6 @@ api.env
 
 # dataconnect generated files
 .dataconnect
-src/public/icons/icon-512x512.png
 
 #other
 dist/
