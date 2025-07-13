@@ -69,11 +69,9 @@ api.env
 # dataconnect generated files
 .dataconnect
 
-#other
-dist/
-
 # Local Netlify folder
 .netlify
 
 #other
 rapihin.html
+dist
