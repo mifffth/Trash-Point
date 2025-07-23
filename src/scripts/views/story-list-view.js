@@ -156,7 +156,12 @@ export class PointListView {
       item.innerHTML = `
     <img src="${point.photoUrl}" 
      class="cursor-pointer object-cover w-full h-auto max-h-100 max-w-100" 
-     loading="lazy" /><p class="text-gray-700">${point.description}</p>
+     loading="lazy" />
+    <p class="text-gray-700">Laporan oleh: <strong class="font-semibold">${
+      point.submittedBy || "Tidak diketahui"
+    }
+      </strong></p><br>
+    <p class="text-gray-700">${point.description}</p>
     <p class="text-gray-700">Jenis titik: <strong class="uppercase">${
       point.type
     }</strong></p>
@@ -295,7 +300,7 @@ export class PointListView {
     const pointPhoto = this.container.querySelector("#point-photo");
 
     pointPhoto.src = point.photoUrl;
-    pointPhoto.alt = `Foto dari ${point.submittedBy || 'Tidak diketahui'}`;
+    pointPhoto.alt = `Foto dari ${point.submittedBy || "Tidak diketahui"}`;
 
     const mediaContainer = this.container.querySelector(
       "#media-scroll-container"
@@ -333,12 +338,14 @@ export class PointListView {
     const pointDetail = this.container.querySelector("#point-detail");
 
     pointDetail.innerHTML = `
-      <h2 class="text-gray-700">Laporan oleh: <strong class="font-semibold">${point.submittedBy || 'Tidak diketahui'}
-      </strong></h2>
+      <p class="text-gray-700">Laporan oleh: <strong class="font-semibold">${
+        point.submittedBy || "Tidak diketahui"
+      }
+      </strong></p><br>
       <p class="text-gray-700">${point.description}</p>
       <p class="text-gray-700">Jenis titik: <strong class="uppercase">${
-      point.type
-    }</strong></p>
+        point.type
+      }</strong></p>
       <p class="text-gray-700">
         Status:
         <span class="inline-block px-2 py-1 rounded-full text-white text-xs font-semibold ${
@@ -451,5 +458,4 @@ export class PointListView {
       });
     }
   }
-
 }
