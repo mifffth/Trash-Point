@@ -37,7 +37,8 @@ export class PointAddView {
             <label style="display: block; margin-bottom: 0.5rem;">Tipe Lokasi:</label>
             <label><input type="radio" name="type" value="Bank sampah" required> Bank sampah</label><br>
             <label><input type="radio" name="type" value="TPA"> TPA</label><br>
-            <label><input type="radio" name="type" value="Tempat sampah umum"> Tempat sampah umum</label>
+            <label><input type="radio" name="type" value="Tempat sampah umum"> Tempat sampah umum</label><br>
+            <label><input type="radio" name="type" value="Sumur kompos"> Sumur kompos</label>
           </div>
 
           <div style="margin-bottom: 1rem;">

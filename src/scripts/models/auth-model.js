@@ -1,8 +1,10 @@
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { app } from '../API/firebase.js';
 
 const auth = getAuth(app);
 const TOKEN_KEY = 'token';
+const db = getFirestore(app);
 
 export async function loginUser(email, password) {
   try {
@@ -19,9 +21,16 @@ export async function loginUser(email, password) {
 export async function registerUser(name, email, password) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const token = await userCredential.user.getIdToken();
+    const user = userCredential.user;
+    const token = await user.getIdToken();
 
     saveToken(token);
+
+    await setDoc(doc(db, 'users', user.uid), {
+      name,
+      email,
+      createdAt: new Date()
+    });
 
     return {
       token,

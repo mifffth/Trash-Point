@@ -31,7 +31,12 @@ export class PointListView {
   }
 
   renderLoading() {
-    this.container.innerHTML = "<h2>Memuat laporan...</h2>";
+    this.container.innerHTML = `
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Memuat laporan...</p>
+      </div>
+    `;
   }
 
   renderError(message) {
@@ -290,7 +295,7 @@ export class PointListView {
     const pointPhoto = this.container.querySelector("#point-photo");
 
     pointPhoto.src = point.photoUrl;
-    pointPhoto.alt = `Foto dari ${point.description}`;
+    pointPhoto.alt = `Foto dari ${point.submittedBy || 'Tidak diketahui'}`;
 
     const mediaContainer = this.container.querySelector(
       "#media-scroll-container"
@@ -328,10 +333,12 @@ export class PointListView {
     const pointDetail = this.container.querySelector("#point-detail");
 
     pointDetail.innerHTML = `
+      <h2 class="text-gray-700">Laporan oleh: <strong class="font-semibold">${point.submittedBy || 'Tidak diketahui'}
+      </strong></h2>
       <p class="text-gray-700">${point.description}</p>
-      <p class="text-gray-700">
-        Jenis titik: <strong>${point.type}</strong>
-      </p>
+      <p class="text-gray-700">Jenis titik: <strong class="uppercase">${
+      point.type
+    }</strong></p>
       <p class="text-gray-700">
         Status:
         <span class="inline-block px-2 py-1 rounded-full text-white text-xs font-semibold ${
