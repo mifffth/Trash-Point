@@ -16,6 +16,7 @@ export class PointListPresenter {
   }
 
   async onDeletePointClicked(pointId) {
+    this.view.showLoadingOverlay("Menghapus laporan...");
     try {
       await deletePoint(pointId);
       this.cachedPoints = await fetchPoints();
@@ -24,6 +25,8 @@ export class PointListPresenter {
     } catch (error) {
       console.error('Error deleting point:', error);
       this.view.renderError('Gagal menghapus laporan: ' + error.message);
+    } finally {
+      this.view.hideLoadingOverlay();
     }
   }
 

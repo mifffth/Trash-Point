@@ -433,4 +433,23 @@ export class PointListView {
       )
       .openPopup();
   }
+
+  showLoadingOverlay(text) {
+    this.overlay = document.createElement("div");
+    this.overlay.className = "loading-overlay";
+    this.overlay.textContent = text;
+    document.body.appendChild(this.overlay);
+    gsap.fromTo(this.overlay, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+  }
+
+  hideLoadingOverlay() {
+    if (this.overlay) {
+      gsap.to(this.overlay, {
+        opacity: 0,
+        duration: 0.3,
+        onComplete: () => this.overlay.remove(),
+      });
+    }
+  }
+
 }
