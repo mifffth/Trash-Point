@@ -4,17 +4,16 @@
 
 **Trash-Point** merupakan aplikasi pelaporan titik sampah yang memungkinkan pengguna untuk menandai dan mendokumentasikan lokasi tempat sampah seperti bank sampah, TPA, tempat sampah umum, dan sumur kompos melalui antarmuka web interaktif.
 
-> 🧑‍🤝‍🧑 Proyek ini merupakan bagian dari kegiatan **Kuliah Kerja Nyata (KKN) YO021** daerah Padukuhan Jaban, Kalurahan Tridadi, Kapenewon Sleman, Daerah Istimewa Yogyakarta dengan kontributor utama oleh **Miftah Desma Syahputra**. Aplikasi web ini mendukung mobile dan desktop, sehingga bisa digunakan di perangkat apapun.
+🧑‍🤝‍🧑 Proyek ini merupakan bagian dari kegiatan **Kuliah Kerja Nyata (KKN) YO021** daerah Padukuhan Jaban, Kalurahan Tridadi, Kapenewon Sleman, Daerah Istimewa Yogyakarta dengan kontributor utama oleh **Miftah Desma Syahputra**. Aplikasi web ini mendukung mobile dan desktop, sehingga bisa digunakan di perangkat apapun.
 
 ### 📱 Mobile View
-
-<img src="public/images/mobile1.png" alt="Mobile Screenshot 1" width="100%" style="margin-bottom: 10px;" />
-<img src="public/images/mobile2.png" alt="Mobile Screenshot 2" width="100%" style="margin-bottom: 10px;" />
+<img src="src/public/images/mobile1.png" alt="Mobile Screenshot 1" width="100%" style="margin-bottom: 10px;" />
+<img src="src/public/images/mobile2.png" alt="Mobile Screenshot 2" width="100%" style="margin-bottom: 10px;" />
 
 ### 💻 Desktop View
 
-<img src="public/images/desktop1.png" alt="Desktop Screenshot 1" width="100%" style="margin-bottom: 10px;" />
-<img src="public/images/desktop2.png" alt="Desktop Screenshot 2" width="100%" style="margin-bottom: 10px;" />
+<img src="src/public/images/desktop1.png" alt="Desktop Screenshot 1" width="100%" style="margin-bottom: 10px;" />
+<img src="src/public/images/desktop2.png" alt="Desktop Screenshot 2" width="100%" style="margin-bottom: 10px;" />
 
 ---
 
