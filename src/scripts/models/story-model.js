@@ -27,6 +27,7 @@ export async function submitPoint(pointData) {
       status: pointData.status,
       latitude: pointData.latitude,
       longitude: pointData.longitude,
+      submittedBy: pointData.submittedBy,
       createdAt: new Date(),
     });
 
