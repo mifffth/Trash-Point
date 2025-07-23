@@ -113,6 +113,12 @@ export class PointAddView {
     </article>
     `;
 
+    const cameraButton = document.getElementById("camera-button");
+    const isDesktop = !('ontouchstart' in window) && navigator.maxTouchPoints === 0;
+    if (isDesktop) {
+      cameraButton.style.display = "none";
+    }
+
     this.initMap();
     this.initSubmit();
     this.initCamera();

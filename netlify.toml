@@ -1,2 +1,8 @@
 [functions]
-    directory = "netlify/functions"
+  directory = "netlify/functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; img-src * blob: data:; connect-src *; style-src 'self' 'unsafe-inline'"
+    X-Frame-Options = "DENY"

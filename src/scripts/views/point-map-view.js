@@ -43,7 +43,7 @@ export class PointMapView {
       OpenStreetMap: L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
-          attribution: "&copy; OpenStreetMap contributors",
+          attribution: "© OpenStreetMap contributors",
         }
       ),
       OpenTopoMap: L.tileLayer(
@@ -56,17 +56,70 @@ export class PointMapView {
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         {
           attribution:
-            "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+            "Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
         }
       ),
     };
+
+    const overlayLayers = {};
+
+    const layersControl = L.control
+      .layers(baseLayers, overlayLayers)
+      .addTo(this.map);
+
     baseLayers["OpenStreetMap"].addTo(this.map);
-    L.control.layers(baseLayers).addTo(this.map);
+
+    fetch("./data/JABAN_49_4326.geojson")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("GeoJSON data loaded:", data);
+        console.log("Type:", data.type);
+        console.log("Features count:", data.features?.length || "No features");
+
+        const geojsonLayer = L.geoJSON(data, {
+          style: function (feature) {
+            console.log("Styling feature:", feature);
+            return {
+              color: "#3388ff",
+              weight: 3,
+              opacity: 1,
+              fillOpacity: 0.5,
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            console.log("Feature:", feature);
+            if (feature.properties) {
+              layer.bindPopup("Feature Name: " + feature.properties.NAME);
+            }
+          },
+        });
+
+        console.log(
+          "GeoJSON Layer created:",
+          geojsonLayer.getLayers().length,
+          "layers"
+        );
+
+        layersControl.addOverlay(geojsonLayer, "Jaban");
+        geojsonLayer.addTo(this.map);
+
+        this.geojsonLayer = geojsonLayer;
+      })
+
+      .catch((error) =>
+        console.error("Error loading the GeoJSON file:", error)
+      );
 
     const listButton = L.control({ position: "topright" });
     listButton.onAdd = function () {
       const button = L.DomUtil.create("button", "leaflet-bar");
-      button.innerHTML = '<i class="fa-solid fa-list-ul" style="font-size: 27px;"></i>';
+      button.innerHTML =
+        '<i class="fa-solid fa-list-ul" style="font-size: 27px;"></i>';
       button.setAttribute("aria-label", "Lihat daftar laporan");
       button.style.backgroundColor = "white";
       button.style.padding = "8px";
@@ -79,7 +132,7 @@ export class PointMapView {
       };
 
       return button;
-    }.bind(this); 
+    }.bind(this);
 
     listButton.addTo(this.map);
   }

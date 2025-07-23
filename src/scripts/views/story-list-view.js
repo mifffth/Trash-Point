@@ -252,7 +252,52 @@ export class PointListView {
         ),
       };
       baseLayers["OpenStreetMap"].addTo(this.mapReports);
-      L.control.layers(baseLayers).addTo(this.mapReports);
+      this.layersControl = L.control.layers(baseLayers).addTo(this.mapReports);
+
+      fetch("./data/JABAN_49_4326.geojson")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("GeoJSON data loaded:", data);
+          console.log("Type:", data.type);
+          console.log(
+            "Features count:",
+            data.features?.length || "No features"
+          );
+
+          const geojsonLayer = L.geoJSON(data, {
+            style: function (feature) {
+              console.log("Styling feature:", feature);
+              return {
+                color: "#3388ff",
+                weight: 3,
+                opacity: 1,
+                fillOpacity: 0.5,
+              };
+            },
+            onEachFeature: function (feature, layer) {
+              console.log("Feature:", feature);
+              if (feature.properties) {
+                layer.bindPopup("Feature Name: " + feature.properties.NAME);
+              }
+            },
+          });
+
+          console.log(
+            "GeoJSON Layer created:",
+            geojsonLayer.getLayers().length,
+            "layers"
+          );
+
+          this.layersControl.addOverlay(geojsonLayer, "Jaban");
+          geojsonLayer.addTo(this.mapReports);
+
+          this.geojsonLayer = geojsonLayer;
+        });
 
       const mapsButton = L.control({ position: "topright" });
       mapsButton.onAdd = function () {
@@ -392,7 +437,7 @@ export class PointListView {
 
     if (this.map === null) {
       const mapEl = this.container.querySelector("#map");
-      this.map = L.map(mapEl).setView([point.latitude, point.longitude], 13);
+      this.map = L.map(mapEl).setView([point.latitude, point.longitude], 15);
 
       const baseLayers = {
         OpenStreetMap: L.tileLayer(
@@ -416,7 +461,52 @@ export class PointListView {
         ),
       };
       baseLayers["OpenStreetMap"].addTo(this.map);
-      L.control.layers(baseLayers).addTo(this.map);
+      this.layersControl = L.control.layers(baseLayers).addTo(this.map);
+
+      fetch("./data/JABAN_49_4326.geojson")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("GeoJSON data loaded:", data);
+          console.log("Type:", data.type);
+          console.log(
+            "Features count:",
+            data.features?.length || "No features"
+          );
+
+          const geojsonLayer = L.geoJSON(data, {
+            style: function (feature) {
+              console.log("Styling feature:", feature);
+              return {
+                color: "#3388ff",
+                weight: 3,
+                opacity: 1,
+                fillOpacity: 0.5,
+              };
+            },
+            onEachFeature: function (feature, layer) {
+              console.log("Feature:", feature);
+              if (feature.properties) {
+                layer.bindPopup("Feature Name: " + feature.properties.NAME);
+              }
+            },
+          });
+
+          console.log(
+            "GeoJSON Layer created:",
+            geojsonLayer.getLayers().length,
+            "layers"
+          );
+
+          this.layersControl.addOverlay(geojsonLayer, "Jaban");
+          geojsonLayer.addTo(this.map);
+
+          this.geojsonLayer = geojsonLayer;
+        });
     } else {
       this.map.setView([point.latitude, point.longitude], 13);
     }
