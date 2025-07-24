@@ -339,7 +339,7 @@ export class PointAddView {
           cameraPreview.style.display = "block";
 
           const compressedFile = new File([blob], "photo.jpg", {
-            type: "image/jpeg",
+            type: "image/webp",
           });
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(compressedFile);
@@ -347,7 +347,7 @@ export class PointAddView {
           document.getElementById("photo-upload").files = dataTransfer.files;
           document.getElementById("photo-camera").files = dataTransfer.files;
         },
-        "image/jpeg",
+        "image/webp",
         0.85
       );
     };
@@ -372,11 +372,11 @@ export class PointAddView {
     canvas.toBlob(
       (blob) => {
         const file = new File([blob], "captured-photo.jpg", {
-          type: "image/jpeg",
+          type: "image/webp",
         });
         callback(file);
       },
-      "image/jpeg",
+      "image/webp",
       0.95
     );
   }
