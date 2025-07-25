@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { app } from '../API/firebase.js';
 
@@ -41,6 +41,21 @@ export async function registerUser(name, email, password) {
     return {
       token: '',
       message: error.message || 'Register gagal',
+      error: true,
+    };
+  }
+}
+
+export async function resetPassword(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return {
+      message: 'Email reset password telah dikirim.',
+      error: false,
+    };
+  } catch (error) {
+    return {
+      message: error.message || 'Gagal mengirim email reset password.',
       error: true,
     };
   }

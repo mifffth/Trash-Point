@@ -14,7 +14,7 @@ export class LoginView {
       <div
           style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px;">
           <h2 style="font-weight: 700; font-size: 24px; margin-bottom: 24px;">MASUK</h2>
-          <p style="color: #676767; margin-bottom: 24px;">Silahkan masuk dengan akun anda</p>
+          <p style="color: #676767; margin-bottom: 24px;">Silakan masuk dengan akun anda</p>
           <form id="login-form" tabindex="-1" role="main" class="login-form" style="width: 100%; 
         max-width: 320px;">
               <a href="#login-form" class="skip-link">Lewati ke konten utama
@@ -28,10 +28,13 @@ export class LoginView {
               </div>
               <div style="margin-bottom: 16px;">
                   <label for="password">Kata sandi</label>
-                  <input type="password" id="password" name="password" placeholder="Password"
+                  <input type="password" id="password" name="password" placeholder="Kata sandi"
                       aria-label="Masukkan password/sandi anda" autocomplete="current-password"
                       style="width: 100%; padding: 12px 16px; background:  #dfdfdf; border: none; border-radius: 12px; font-size: 14px;"
                       required />
+              </div>
+              <div style="text-align: center; margin-bottom: 16px;">
+                  <a href="#" id="forgot-password" style="color: #2563eb; text-decoration: none;">Lupa kata sandi?</a>
               </div>
               <div style="text-align: center;">
                   <button type="submit"
@@ -61,7 +64,12 @@ export class LoginView {
       duration: 0.5,
       ease: 'power2.out'
     });
-
+    const forgotPasswordLink = this.container.querySelector('#forgot-password');
+    forgotPasswordLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const email = form.email.value;
+      this.presenter.onForgotPassword(email);
+    });
     const mainContent = document.querySelector('#login-form');
     const skipLink = document.querySelector('.skip-link');
 
