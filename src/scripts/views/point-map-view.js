@@ -1,5 +1,6 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { markerIcons } from "../utils/marker-icons";
 
 export class PointMapView {
   constructor(container) {
@@ -94,7 +95,7 @@ export class PointMapView {
           onEachFeature: function (feature, layer) {
             console.log("Feature:", feature);
             if (feature.properties) {
-              layer.bindPopup("Feature Name: " + feature.properties.NAME);
+              layer.bindPopup("Padukuhan: " + feature.properties.NAME);
             }
           },
         });
@@ -140,7 +141,9 @@ export class PointMapView {
   displayPoints(points) {
     points.forEach((point) => {
       if (point.latitude && point.longitude) {
-        L.marker([point.latitude, point.longitude]).addTo(this.map).bindPopup(`
+        const icon = markerIcons[point.type] || L.Icon.Default;
+        L.marker([point.latitude, point.longitude], { icon }).addTo(this.map)
+          .bindPopup(`
             <strong>${point.description}</strong><br>
             <a href="https://www.google.com/maps/place/${point.latitude},${
           point.longitude

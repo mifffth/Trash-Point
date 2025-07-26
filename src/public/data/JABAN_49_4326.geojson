@@ -13,6 +13,7 @@
             "properties": {
                 "OBJECTID": 1,
                 "FID_1": 1.0,
+                "NAME": "Jaban",
                 "Shape_Leng": 2650.09317362,
                 "Shape_Area": 215340.483377
             },

@@ -1,6 +1,7 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { getToken } from "../models/auth-model";
+import { markerIcons } from "../utils/marker-icons";
 
 export class PointListView {
   constructor(container) {
@@ -9,17 +10,6 @@ export class PointListView {
     this.map = null;
     this.currentPoint = null;
     this.mapReports = null;
-
-    L.Marker.prototype.options.icon = L.icon({
-      iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
-      shadowUrl:
-        "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-      shadowAnchor: [12, 41],
-    });
   }
 
   setPresenter(presenter) {
@@ -65,10 +55,17 @@ export class PointListView {
             <h2 class="font-bold mb-4 text-xl text-center" id="point-list-heading">
                 Daftar Titik
             </h2>
-            
+
             <div id="map-reports" style="height: 400px; border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem;"></div>
 
             <div id="map-loading-container"></div>
+
+<input id="search-input" type="text"
+       placeholder="Cari deskripsi atau pengirim..."
+       class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:outline-none"
+       style="width: 100% !important; max-width: 100% !important; box-sizing: border-box;" />
+
+
 
             <div id="point-list" tabindex="-1" role="main" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
                 role="list" aria-labelledby="point-list-heading">
@@ -137,6 +134,7 @@ export class PointListView {
     const mainContent = document.querySelector("#point-list");
     const skipLink = document.querySelector(".skip-link");
     const listEl = this.container.querySelector("#point-list");
+    const searchInput = this.container.querySelector("#search-input");
     const mapModal = this.container.querySelector("#map-modal");
     const modalContent = this.container.querySelector("#modal-content");
     const mapEl = document.querySelector("#map-reports");
@@ -148,6 +146,18 @@ export class PointListView {
       mainContent.scrollIntoView();
     });
 
+    searchInput.addEventListener("input", () => {
+      const keyword = searchInput.value.toLowerCase();
+      const filteredPoints = points.filter(
+        (point) =>
+          (point.description &&
+            point.description.toLowerCase().includes(keyword)) ||
+          (point.submittedBy &&
+            point.submittedBy.toLowerCase().includes(keyword))
+      );
+      this.renderFilteredList(filteredPoints);
+    });
+
     points.forEach((point, index) => {
       const item = document.createElement("article");
       item.className =
@@ -157,10 +167,10 @@ export class PointListView {
     <img src="${point.photoUrl}" 
      class="cursor-pointer object-cover w-full h-auto max-h-100 max-w-100" 
      loading="lazy" />
-    <p class="text-gray-700">Laporan oleh: <strong class="font-semibold">${
+    <p class="text-gray-700 mb-1">Laporan oleh: <strong class="font-semibold">${
       point.submittedBy || "Tidak diketahui"
     }
-      </strong></p><br>
+      </strong></p>
     <p class="text-gray-700">${point.description}</p>
     <p class="text-gray-700">Jenis titik: <strong class="uppercase">${
       point.type
@@ -282,7 +292,7 @@ export class PointListView {
             onEachFeature: function (feature, layer) {
               console.log("Feature:", feature);
               if (feature.properties) {
-                layer.bindPopup("Feature Name: " + feature.properties.NAME);
+                layer.bindPopup("Padukuhan: " + feature.properties.NAME);
               }
             },
           });
@@ -323,8 +333,10 @@ export class PointListView {
 
     points.forEach((point) => {
       if (point.latitude && point.longitude) {
-        L.marker([point.latitude, point.longitude]).addTo(this.mapReports)
-          .bindPopup(`
+        const icon = markerIcons[point.type] || L.Icon.Default;
+        L.marker([point.latitude, point.longitude], { icon }).addTo(
+          this.mapReports
+        ).bindPopup(`
             <strong>${point.description}</strong><br>
             <a href="https://www.google.com/maps/place/${point.latitude},${
           point.longitude
@@ -335,6 +347,44 @@ export class PointListView {
             </a>
           `);
       }
+    });
+  }
+
+  renderFilteredList(filteredPoints) {
+    const listEl = this.container.querySelector("#point-list");
+    listEl.innerHTML = "";
+
+    filteredPoints.forEach((point) => {
+      const item = document.createElement("article");
+      item.className =
+        "bg-white rounded-xl shadow-2xl overflow-hidden p-4 flex flex-col gap-2 text-sm";
+      item.setAttribute("tabindex", "0");
+      item.innerHTML = `
+        <img src="${point.photoUrl}" 
+          class="cursor-pointer object-cover w-full h-auto max-h-100 max-w-100" 
+          loading="lazy" />
+        <p class="text-gray-700 mb-1">Laporan oleh: <strong class="font-semibold">${
+          point.submittedBy || "Tidak diketahui"
+        }</strong></p>
+        <p class="text-gray-700">${point.description}</p>
+        <p class="text-gray-700">Jenis titik: <strong class="uppercase">${
+          point.type
+        }</strong></p>
+        <p class="text-gray-700">
+          Status:
+          <span class="inline-block px-2 py-1 rounded-full text-white text-xs font-semibold uppercase ${
+            point.status === "aktif" ? "bg-green-500" : "bg-red-500"
+          }">
+            ${point.status === "aktif" ? "Aktif" : "Tidak Aktif"}
+          </span>
+        </p>
+      `;
+
+      item.style.cursor = "pointer";
+      item.addEventListener("click", () => {
+        this.presenter.onPointSelected(point);
+      });
+      listEl.appendChild(item);
     });
   }
 
@@ -383,10 +433,10 @@ export class PointListView {
     const pointDetail = this.container.querySelector("#point-detail");
 
     pointDetail.innerHTML = `
-      <p class="text-gray-700">Laporan oleh: <strong class="font-semibold">${
+      <p class="text-gray-700 mb-1">Laporan oleh: <strong class="font-semibold">${
         point.submittedBy || "Tidak diketahui"
       }
-      </strong></p><br>
+      </strong></p>
       <p class="text-gray-700">${point.description}</p>
       <p class="text-gray-700">Jenis titik: <strong class="uppercase">${
         point.type
@@ -461,7 +511,15 @@ export class PointListView {
         ),
       };
       baseLayers["OpenStreetMap"].addTo(this.map);
-      this.layersControl = L.control.layers(baseLayers).addTo(this.map);
+      this.layersControl = L.control
+        .layers(baseLayers, null, {
+          collapsed: true,
+        })
+        .addTo(this.map);
+
+      // this.layersControl = L.control.layers(baseLayers, null, {
+      //   collapsed: true
+      // }).addTo(this.map);
 
       fetch("./data/JABAN_49_4326.geojson")
         .then((response) => {
@@ -491,7 +549,7 @@ export class PointListView {
             onEachFeature: function (feature, layer) {
               console.log("Feature:", feature);
               if (feature.properties) {
-                layer.bindPopup("Feature Name: " + feature.properties.NAME);
+                layer.bindPopup("Padukuhan: " + feature.properties.NAME);
               }
             },
           });
@@ -514,7 +572,8 @@ export class PointListView {
     this.map.eachLayer((layer) => {
       if (layer instanceof L.Marker) this.map.removeLayer(layer);
     });
-    L.marker([point.latitude, point.longitude])
+    const icon = markerIcons[point.type] || L.Icon.Default;
+    L.marker([point.latitude, point.longitude], { icon })
       .addTo(this.map)
       .bindPopup(
         `

@@ -2,15 +2,15 @@ import * as css from "../styles/styles.css";
 
 import { LoginView } from "./views/login-view.js";
 import { RegisterView } from "./views/register-view.js";
-import { PointListView } from "./views/story-list-view.js";
-import { PointAddView } from "./views/story-add-view.js";
+import { PointListView } from "./views/point-list-view.js";
+import { PointAddView } from "./views/point-add-view.js";
 import { NotFoundView } from "./views/not-found-view.js";
 import { PointMapView } from "./views/point-map-view.js";
 
 import { LoginPresenter } from "./presenters/login-presenter.js";
 import { RegisterPresenter } from "./presenters/register-presenter.js";
-import { PointListPresenter } from "./presenters/story-list-presenter.js";
-import { PointAddPresenter } from "./presenters/story-add-presenter.js";
+import { PointListPresenter } from "./presenters/point-list-presenter.js";
+import { PointAddPresenter } from "./presenters/point-add-presenter.js";
 import { NotFoundPresenter } from "./presenters/not-found-presenter.js";
 import { PointMapPresenter } from "./presenters/point-map-presenter.js";
 
