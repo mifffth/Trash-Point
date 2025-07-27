@@ -44,24 +44,15 @@ export class PointAddPresenter {
         try {
           const response = await fetch("/.netlify/functions/upload", {
             method: "POST",
-            headers: { 
-              "Content-Type": "application/json" 
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ photoBase64: reader.result }),
           });
-
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(
-              errorData.message || "Failed to upload to Cloudinary"
-            );
+            throw new Error(errorData.message || "Failed to upload to Cloudinary");
           }
-
           const data = await response.json();
-          resolve({ 
-            secureUrl: data.secureUrl, 
-            publicId: data.publicId 
-          });
+          resolve({ secureUrl: data.secureUrl, publicId: data.publicId });
         } catch (error) {
           reject(error);
         }
@@ -71,6 +62,7 @@ export class PointAddPresenter {
       };
     });
   }
+
   async onSubmitPhoto(photo, formData) {
     if (!photo && !this.pointId) {
       this.view.renderSubmitError("Foto wajib diunggah");
@@ -81,23 +73,23 @@ export class PointAddPresenter {
 
     try {
       let secureUrl, publicId;
+      let oldCloudinaryId = null;
+
+      if (this.pointId && photo) {
+        const existingPoint = await fetchPointById(this.pointId);
+        if (existingPoint && existingPoint.cloudinaryId) {
+          oldCloudinaryId = existingPoint.cloudinaryId;
+        }
+      }
 
       if (photo) {
-        const options = {
-          maxSizeMB: 1,
-          maxWidthOrHeight: 1024,
-          useWebWorker: true,
-        };
+        const options = { maxSizeMB: 1, maxWidthOrHeight: 1024, useWebWorker: true };
         const compressedPhoto = await imageCompression(photo, options);
-
         if (compressedPhoto.size > 1048576) {
-          this.view.renderSubmitError(
-            "Ukuran foto setelah kompresi melebihi 1MB."
-          );
+          this.view.renderSubmitError("Ukuran foto setelah kompresi melebihi 1MB.");
           this.view.hideLoadingOverlay();
           return;
         }
-
         const uploadResult = await this.uploadToCloudinary(compressedPhoto);
         secureUrl = uploadResult.secureUrl;
         publicId = uploadResult.publicId;
@@ -109,49 +101,25 @@ export class PointAddPresenter {
       const lat = parseFloat(formData.get("lat"));
       const lon = parseFloat(formData.get("lon"));
 
-      const allowedTypes = [
-        "bank sampah",
-        "tpa",
-        "tempat sampah umum",
-        "sumur kompos",
-      ];
-      if (!allowedTypes.includes(type.toLowerCase())) {
-        this.view.renderSubmitError("Tipe tidak valid.");
-        this.view.hideLoadingOverlay();
-        return;
-      }
-      const allowedStatuses = ["aktif", "tidak aktif"];
-      if (!allowedStatuses.includes(status.toLowerCase())) {
-        this.view.renderSubmitError("Status tidak valid.");
-        this.view.hideLoadingOverlay();
-        return;
-      }
-
       const currentUser = auth.currentUser;
       if (!currentUser) {
-        this.view.renderSubmitError(
-          "User tidak ditemukan. Silakan login ulang."
-        );
+        this.view.renderSubmitError("User tidak ditemukan. Silakan login ulang.");
         this.view.hideLoadingOverlay();
         return;
       }
 
       const userDocRef = doc(db, "users", currentUser.uid);
       const userDocSnap = await getDoc(userDocRef);
-      if (!userDocSnap.exists()) {
-        this.view.renderSubmitError("Data pengguna tidak ditemukan.");
-        this.view.hideLoadingOverlay();
-        return;
-      }
       const userData = userDocSnap.data();
       const submittedBy = userData.name || "Tidak diketahui";
+
       const pointData = {
-        description: description,
+        description,
         type: type.toLowerCase(),
         status: status.toLowerCase(),
         latitude: isNaN(lat) ? null : lat,
         longitude: isNaN(lon) ? null : lon,
-        submittedBy: submittedBy,
+        submittedBy,
       };
 
       if (secureUrl && publicId) {
@@ -163,6 +131,18 @@ export class PointAddPresenter {
         pointData.updatedAt = new Date().toISOString();
         await updatePoint(this.pointId, pointData);
         this.view.renderSubmitSuccess("Laporan berhasil diperbarui!");
+
+         if (oldCloudinaryId) {
+          try {
+            await fetch('/netlify/functions/delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ public_id: oldCloudinaryId }),
+            });
+          } catch (deleteError) {
+            console.error("Failed to delete old Cloudinary image, but report was updated:", deleteError);
+          }
+        }
       } else {
         pointData.createdAt = new Date().toISOString();
         await submitPoint(pointData);
