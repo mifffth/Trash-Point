@@ -483,6 +483,22 @@ export class PointListView {
       });
 
       modalContent.appendChild(deleteBtn);
+      const editBtn = document.createElement("button");
+      editBtn.className = "modal-edit-button bg-blue-600 text-white hover:bg-blue-700 p-3 rounded-md shadow-lg";
+      editBtn.innerHTML = '<i class="fa-solid fa-pencil" style="color: white;"></i>';
+      editBtn.style.position = "absolute";
+      editBtn.style.bottom = "1rem";
+      editBtn.style.right = "4rem"; // Adjusted to be next to the delete button
+      editBtn.setAttribute("aria-label", "Edit laporan ini");
+
+      editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.presenter.onEditPointClicked(point.id);
+        const mapModal = this.container.querySelector("#map-modal");
+        mapModal.style.display = "none";
+      });
+
+      modalContent.appendChild(editBtn);
     }
 
     if (this.map === null) {

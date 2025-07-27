@@ -54,6 +54,10 @@ export class PointListPresenter {
       this.view.renderPoint(point);
     }
   }
+
+async onEditPointClicked(pointId) {
+  this.view.navigateTo(`#/edit/${pointId}`);
+}
   
   async onMapButtonClicked() {
     this.view.navigateTo('#/map');

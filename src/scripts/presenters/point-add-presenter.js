@@ -1,9 +1,8 @@
-// test/src/scripts/presenters/story-add-presenter.js
 import imageCompression from "browser-image-compression";
-import { submitPoint } from "../models/story-model.js";
+import { submitPoint, fetchPointById, updatePoint } from "../models/story-model.js";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { app } from "../API/firebase.js"; 
+import { app } from "../API/firebase.js";
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -11,6 +10,11 @@ const db = getFirestore(app);
 export class PointAddPresenter {
   constructor() {
     this.view = null;
+    this.pointId = null;
+  }
+
+  setPointIdForEdit(pointId) {
+    this.pointId = pointId;
   }
 
   setView(view) {
@@ -19,6 +23,17 @@ export class PointAddPresenter {
 
   async onPageLoad() {
     this.view.render();
+    if (this.pointId) {
+      this.view.showLoadingOverlay("Memuat data laporan...");
+      try {
+        const point = await fetchPointById(this.pointId);
+        this.view.prefillForm(point);
+      } catch (error) {
+        this.view.renderSubmitError(error.message);
+      } finally {
+        this.view.hideLoadingOverlay();
+      }
+    }
   }
 
   async uploadToCloudinary(file) {
@@ -29,8 +44,8 @@ export class PointAddPresenter {
         try {
           const response = await fetch("/.netlify/functions/upload", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+            headers: { 
+              "Content-Type": "application/json" 
             },
             body: JSON.stringify({ photoBase64: reader.result }),
           });
@@ -38,15 +53,14 @@ export class PointAddPresenter {
           if (!response.ok) {
             const errorData = await response.json();
             throw new Error(
-              errorData.message ||
-                "Failed to upload to Cloudinary via Netlify function"
+              errorData.message || "Failed to upload to Cloudinary"
             );
           }
 
           const data = await response.json();
-          resolve({
-            secureUrl: data.secureUrl,
-            publicId: data.publicId,
+          resolve({ 
+            secureUrl: data.secureUrl, 
+            publicId: data.publicId 
           });
         } catch (error) {
           reject(error);
@@ -57,42 +71,37 @@ export class PointAddPresenter {
       };
     });
   }
-
   async onSubmitPhoto(photo, formData) {
-    if (!photo) {
+    if (!photo && !this.pointId) {
       this.view.renderSubmitError("Foto wajib diunggah");
       return;
     }
 
-    const options = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1024,
-      useWebWorker: true,
-    };
-
-    let compressedPhoto;
-    try {
-      compressedPhoto = await imageCompression(photo, options);
-    } catch (compressionErr) {
-      this.view.renderSubmitError(
-        "Gagal mengompresi foto: " + compressionErr.message
-      );
-      return;
-    }
-
-    if (compressedPhoto.size > 1048576) {
-      this.view.renderSubmitError(
-        "Foto setelah kompresi masih lebih dari 1MB, mohon gunakan kamera web/pilih foto lain"
-      );
-      return;
-    }
-
-    formData.set("photo", compressedPhoto);
-
-    this.view.showLoadingOverlay("Mengunggah laporan...");
+    this.view.showLoadingOverlay("Menyimpan laporan...");
 
     try {
-      const { secureUrl, publicId } = await this.uploadToCloudinary(photo);
+      let secureUrl, publicId;
+
+      if (photo) {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true,
+        };
+        const compressedPhoto = await imageCompression(photo, options);
+
+        if (compressedPhoto.size > 1048576) {
+          this.view.renderSubmitError(
+            "Ukuran foto setelah kompresi melebihi 1MB."
+          );
+          this.view.hideLoadingOverlay();
+          return;
+        }
+
+        const uploadResult = await this.uploadToCloudinary(compressedPhoto);
+        secureUrl = uploadResult.secureUrl;
+        publicId = uploadResult.publicId;
+      }
 
       const description = formData.get("description");
       const type = formData.get("type");
@@ -106,46 +115,38 @@ export class PointAddPresenter {
         "tempat sampah umum",
         "sumur kompos",
       ];
-      const allowedStatuses = ["aktif", "tidak aktif"];
-
       if (!allowedTypes.includes(type.toLowerCase())) {
-        this.view.renderSubmitError(
-          "Tipe tidak valid. Pilih: bank sampah, TPA, tempat sampah umum, atau sumur kompos."
-        );
+        this.view.renderSubmitError("Tipe tidak valid.");
+        this.view.hideLoadingOverlay();
         return;
       }
-
+      const allowedStatuses = ["aktif", "tidak aktif"];
       if (!allowedStatuses.includes(status.toLowerCase())) {
-        this.view.renderSubmitError(
-          "Status tidak valid. Pilih: aktif atau tidak aktif."
-        );
+        this.view.renderSubmitError("Status tidak valid.");
+        this.view.hideLoadingOverlay();
         return;
       }
 
       const currentUser = auth.currentUser;
-
       if (!currentUser) {
         this.view.renderSubmitError(
           "User tidak ditemukan. Silakan login ulang."
         );
+        this.view.hideLoadingOverlay();
         return;
       }
 
       const userDocRef = doc(db, "users", currentUser.uid);
       const userDocSnap = await getDoc(userDocRef);
-
       if (!userDocSnap.exists()) {
         this.view.renderSubmitError("Data pengguna tidak ditemukan.");
+        this.view.hideLoadingOverlay();
         return;
       }
-
       const userData = userDocSnap.data();
       const submittedBy = userData.name || "Tidak diketahui";
-
       const pointData = {
         description: description,
-        photoUrl: secureUrl,
-        cloudinaryId: publicId,
         type: type.toLowerCase(),
         status: status.toLowerCase(),
         latitude: isNaN(lat) ? null : lat,
@@ -153,13 +154,25 @@ export class PointAddPresenter {
         submittedBy: submittedBy,
       };
 
-      await submitPoint(pointData);
+      if (secureUrl && publicId) {
+        pointData.photoUrl = secureUrl;
+        pointData.cloudinaryId = publicId;
+      }
 
-      this.view.renderSubmitSuccess();
+      if (this.pointId) {
+        pointData.updatedAt = new Date().toISOString();
+        await updatePoint(this.pointId, pointData);
+        this.view.renderSubmitSuccess("Laporan berhasil diperbarui!");
+      } else {
+        pointData.createdAt = new Date().toISOString();
+        await submitPoint(pointData);
+        this.view.renderSubmitSuccess("Laporan berhasil ditambahkan!");
+      }
+
       this.view.navigateTo("#/stories");
     } catch (err) {
       console.error("Error in onSubmitPhoto:", err);
-      this.view.renderSubmitError("Gagal menambahkan cerita: " + err.message);
+      this.view.renderSubmitError("Gagal menyimpan laporan: " + err.message);
     } finally {
       this.view.hideLoadingOverlay();
     }

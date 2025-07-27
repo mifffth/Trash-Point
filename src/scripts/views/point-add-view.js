@@ -114,7 +114,8 @@ export class PointAddView {
     `;
 
     const cameraButton = document.getElementById("camera-button");
-    const isDesktop = !('ontouchstart' in window) && navigator.maxTouchPoints === 0;
+    const isDesktop =
+      !("ontouchstart" in window) && navigator.maxTouchPoints === 0;
     if (isDesktop) {
       cameraButton.style.display = "none";
     }
@@ -200,7 +201,8 @@ export class PointAddView {
     const locateButton = L.control({ position: "topright" });
     locateButton.onAdd = function () {
       const button = L.DomUtil.create("button", "leaflet-bar");
-      button.innerHTML = '<i class="fa-solid fa-crosshairs" style="font-size: 27px;"></i>';
+      button.innerHTML =
+        '<i class="fa-solid fa-crosshairs" style="font-size: 27px;"></i>';
       button.style.backgroundColor = "white";
       button.style.padding = "8px";
       button.style.borderRadius = "4px";
@@ -379,6 +381,47 @@ export class PointAddView {
       "image/webp",
       0.95
     );
+  }
+
+  prefillForm(point) {
+    const titleElement = this.container.querySelector("h2");
+    if (titleElement) {
+      titleElement.textContent = "Edit Titik";
+    }
+
+    document.getElementById("description").value = point.description;
+
+    const typeRadioButton = document.querySelector(
+      `input[name="type"][value="${point.type}"]`
+    );
+    if (typeRadioButton) {
+      typeRadioButton.checked = true;
+    }
+
+    const statusRadioButton = document.querySelector(
+      `input[name="status"][value="${point.status}"]`
+    );
+    if (statusRadioButton) {
+      statusRadioButton.checked = true;
+    }
+
+    document.getElementById("lat").value = point.latitude;
+    document.getElementById("lon").value = point.longitude;
+
+    const photoPreview = document.getElementById("photo-preview");
+    const cameraPreview = document.getElementById("camera-preview");
+    photoPreview.src = point.photoUrl;
+    photoPreview.style.display = "block";
+    cameraPreview.style.display = "block";
+
+    const submitButton = this.container.querySelector('button[type="submit"]');
+    if (submitButton) {
+      submitButton.textContent = "Simpan Perubahan";
+    }
+  }
+
+  renderSubmitSuccess(message = "Laporan berhasil ditambahkan!") {
+    alert(message);
   }
 
   showLoadingOverlay(text) {

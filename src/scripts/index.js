@@ -58,35 +58,44 @@ function renderView() {
   document.startViewTransition(() => {
     let view = null;
     let presenter = null;
-    switch (hash) {
-      case "":
-      case "#/":
-        view = new PointListView(main);
-        presenter = new PointListPresenter();
-        break;
-      case "#/login":
-        view = new LoginView(main);
-        presenter = new LoginPresenter();
-        break;
-      case "#/stories":
-        view = new PointListView(main);
-        presenter = new PointListPresenter();
-        break;
-      case "#/map":
-        view = new PointMapView(main);
-        presenter = new PointMapPresenter();
-        break;
-      case "#/add":
-        view = new PointAddView(main);
-        presenter = new PointAddPresenter();
-        break;
-      case "#/register":
-        view = new RegisterView(main);
-        presenter = new RegisterPresenter();
-        break;
-      default:
-        view = new NotFoundView(main);
-        presenter = new NotFoundPresenter();
+    const editMatch = hash.match(/^#\/edit\/(.*)$/);
+
+    if (editMatch) {
+      const pointId = editMatch[1];
+      view = new PointAddView(main);
+      presenter = new PointAddPresenter();
+      presenter.setPointIdForEdit(pointId);
+    } else {
+      switch (hash) {
+        case "":
+        case "#/":
+          view = new PointListView(main);
+          presenter = new PointListPresenter();
+          break;
+        case "#/login":
+          view = new LoginView(main);
+          presenter = new LoginPresenter();
+          break;
+        case "#/stories":
+          view = new PointListView(main);
+          presenter = new PointListPresenter();
+          break;
+        case "#/map":
+          view = new PointMapView(main);
+          presenter = new PointMapPresenter();
+          break;
+        case "#/add":
+          view = new PointAddView(main);
+          presenter = new PointAddPresenter();
+          break;
+        case "#/register":
+          view = new RegisterView(main);
+          presenter = new RegisterPresenter();
+          break;
+        default:
+          view = new NotFoundView(main);
+          presenter = new NotFoundPresenter();
+      }
     }
     view.setPresenter(presenter);
     presenter.setView(view);
