@@ -18,11 +18,12 @@ body {
 }
 
 header {
+  position: sticky;
+  top: 0;
   background-color: var(--primary);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   color: rgb(243, 163, 79);
   padding: 1rem;
-  position: fixed;
-  width: 100%;
   z-index: 1001;
 }
 
@@ -217,9 +218,10 @@ article img {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
-    transform: translateY(0); 
+    transform: translateY(0);
   }
 }
 
@@ -483,7 +485,7 @@ form label span {
 
   .nav-links.show {
     display: flex;
-    animation: slideDownFadeIn 0.3s ease-in-out forwards; 
+    animation: slideDownFadeIn 0.3s ease-in-out forwards;
   }
 
   .nav-links a[href="#/add"] {
