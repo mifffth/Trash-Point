@@ -84,7 +84,7 @@ export class PointListView {
                   background: rgba(0, 0, 0, 0.7);
                   justify-content: center;
                   align-items: center;
-                  z-index: 1000;
+                  z-index: 1100;
               ">
             <div id="modal-content" tabindex="-1" aria-label="Detail lokasi laporan dalam peta" style="
                     width: 90%;
