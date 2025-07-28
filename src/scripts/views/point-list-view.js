@@ -484,11 +484,11 @@ export class PointListView {
 
       modalContent.appendChild(deleteBtn);
       const editBtn = document.createElement("button");
-      editBtn.className = "modal-edit-button bg-blue-600 text-white hover:bg-blue-700 p-3 rounded-md shadow-lg";
+      editBtn.className = "modal-edit-button bg-yellow-400 text-white hover:bg-yellow-700 p-3 rounded-md shadow-lg mr-2";
       editBtn.innerHTML = '<i class="fa-solid fa-pencil" style="color: white;"></i>';
       editBtn.style.position = "absolute";
       editBtn.style.bottom = "1rem";
-      editBtn.style.right = "4rem"; // Adjusted to be next to the delete button
+      editBtn.style.right = "4rem"; 
       editBtn.setAttribute("aria-label", "Edit laporan ini");
 
       editBtn.addEventListener("click", (e) => {

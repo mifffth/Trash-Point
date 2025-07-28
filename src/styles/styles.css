@@ -211,6 +211,17 @@ article img {
   }
 }
 
+@keyframes slideDownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); 
+  }
+}
+
 .skip-link:focus,
 .skip-login-link:focus {
   transform: translateY(0%);
@@ -467,18 +478,29 @@ form label span {
     flex-direction: column;
     background: white;
     width: 100%;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
   }
 
   .nav-links.show {
     display: flex;
+    animation: slideDownFadeIn 0.3s ease-in-out forwards; 
   }
 
   .nav-links a[href="#/add"] {
     width: 100%;
     justify-content: center;
+  }
+
+  .nav-links a,
+  .nav-links button {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+    border-radius: 0;
+  }
+
+  .nav-links a:last-of-type,
+  .nav-links button:last-of-type {
+    border-bottom: none;
   }
 }
 

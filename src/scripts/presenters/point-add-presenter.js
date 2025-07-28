@@ -1,5 +1,9 @@
 import imageCompression from "browser-image-compression";
-import { submitPoint, fetchPointById, updatePoint } from "../models/story-model.js";
+import {
+  submitPoint,
+  fetchPointById,
+  updatePoint,
+} from "../models/story-model.js";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { app } from "../API/firebase.js";
@@ -49,7 +53,9 @@ export class PointAddPresenter {
           });
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to upload to Cloudinary");
+            throw new Error(
+              errorData.message || "Failed to upload to Cloudinary"
+            );
           }
           const data = await response.json();
           resolve({ secureUrl: data.secureUrl, publicId: data.publicId });
@@ -83,10 +89,16 @@ export class PointAddPresenter {
       }
 
       if (photo) {
-        const options = { maxSizeMB: 1, maxWidthOrHeight: 1024, useWebWorker: true };
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true,
+        };
         const compressedPhoto = await imageCompression(photo, options);
         if (compressedPhoto.size > 1048576) {
-          this.view.renderSubmitError("Ukuran foto setelah kompresi melebihi 1MB.");
+          this.view.renderSubmitError(
+            "Ukuran foto setelah kompresi melebihi 1MB."
+          );
           this.view.hideLoadingOverlay();
           return;
         }
@@ -103,15 +115,18 @@ export class PointAddPresenter {
 
       const currentUser = auth.currentUser;
       if (!currentUser) {
-        this.view.renderSubmitError("User tidak ditemukan. Silakan login ulang.");
+        this.view.renderSubmitError(
+          "User tidak ditemukan. Silakan login ulang."
+        );
         this.view.hideLoadingOverlay();
         return;
       }
 
       const userDocRef = doc(db, "users", currentUser.uid);
       const userDocSnap = await getDoc(userDocRef);
-      const userData = userDocSnap.data();
-      const submittedBy = userData.name || "Tidak diketahui";
+      const currentUserName = userDocSnap.exists()
+        ? userDocSnap.data().name
+        : "Tidak diketahui";
 
       const pointData = {
         description,
@@ -119,7 +134,6 @@ export class PointAddPresenter {
         status: status.toLowerCase(),
         latitude: isNaN(lat) ? null : lat,
         longitude: isNaN(lon) ? null : lon,
-        submittedBy,
       };
 
       if (secureUrl && publicId) {
@@ -129,22 +143,29 @@ export class PointAddPresenter {
 
       if (this.pointId) {
         pointData.updatedAt = new Date().toISOString();
+        pointData.lastEditedBy = currentUserName; 
+
         await updatePoint(this.pointId, pointData);
         this.view.renderSubmitSuccess("Laporan berhasil diperbarui!");
 
-         if (oldCloudinaryId) {
+        if (oldCloudinaryId) {
           try {
-            await fetch("/.netlify/functions/delete", {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify({ public_id: oldCloudinaryId }),
+            await fetch("/netlify/functions/delete", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ public_id: oldCloudinaryId }),
             });
           } catch (deleteError) {
-            console.error("Failed to delete old Cloudinary image, but report was updated:", deleteError);
+            console.error(
+              "Failed to delete old Cloudinary image, but report was updated:",
+              deleteError
+            );
           }
         }
       } else {
+        pointData.submittedBy = currentUserName;
         pointData.createdAt = new Date().toISOString();
+
         await submitPoint(pointData);
         this.view.renderSubmitSuccess("Laporan berhasil ditambahkan!");
       }
