@@ -23,8 +23,6 @@ header {
   background-color: var(--primary);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   color: rgb(243, 163, 79);
-  padding: 1rem;
-  z-index: 1001;
 }
 
 header h1 {
