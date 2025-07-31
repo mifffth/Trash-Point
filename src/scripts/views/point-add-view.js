@@ -215,7 +215,6 @@ export class PointAddView {
       button.onclick = () => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
-            
             (position) => {
               const { latitude, longitude } = position.coords;
               map.setView([latitude, longitude], 13);
@@ -248,20 +247,22 @@ export class PointAddView {
       const { lat, lng } = e.latlng;
       document.getElementById("lat").value = lat;
       document.getElementById("lon").value = lng;
-    
+
       if (marker) map.removeLayer(marker);
       marker = L.marker([lat, lng])
         .addTo(map)
         .bindPopup(`Koordinat: ${lat.toFixed(3)}, ${lng.toFixed(3)}`)
         .openPopup();
-    
-      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById("address").value = data.display_name || '';
+
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          document.getElementById("address").value = data.display_name || "";
         })
-        .catch(err => console.error("Reverse geocoding failed:", err));
-    });    
+        .catch((err) => console.error("Reverse geocoding failed:", err));
+    });
 
     const latInput = document.getElementById("lat");
     const lonInput = document.getElementById("lon");
@@ -403,6 +404,7 @@ export class PointAddView {
     }
 
     document.getElementById("description").value = point.description;
+    document.getElementById("address").value = point.address || "";
 
     const typeRadioButton = document.querySelector(
       `input[name="type"][value="${point.type}"]`
