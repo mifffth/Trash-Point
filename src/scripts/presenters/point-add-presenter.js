@@ -108,6 +108,7 @@ export class PointAddPresenter {
       }
 
       const description = formData.get("description");
+      const address = formData.get("address");
       const type = formData.get("type");
       const status = formData.get("status");
       const lat = parseFloat(formData.get("lat"));
@@ -134,6 +135,7 @@ export class PointAddPresenter {
         status: status.toLowerCase(),
         latitude: isNaN(lat) ? null : lat,
         longitude: isNaN(lon) ? null : lon,
+        address,
       };
 
       if (secureUrl && publicId) {
