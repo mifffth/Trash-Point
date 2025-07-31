@@ -217,7 +217,6 @@ export class PointAddView {
           addressInput.value = "Gagal mengambil alamat";
         });
     };
-    // --- PERUBAHAN SELESAI ---
 
     const locateButton = L.control({ position: "topright" });
     locateButton.onAdd = function () {

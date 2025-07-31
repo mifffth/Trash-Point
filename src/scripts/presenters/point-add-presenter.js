@@ -138,7 +138,7 @@ export class PointAddPresenter {
         status: status.toLowerCase(),
         latitude,
         longitude,
-        address, //
+        address: address.toLowerCase(), 
       };
 
       if (secureUrl && publicId) {
