@@ -128,9 +128,12 @@ export class PointAddPresenter {
 
       const latitude = isNaN(lat) ? null : lat;
       const longitude = isNaN(lon) ? null : lon;
-      const address = latitude && longitude
-        ? await this.fetchAddressFromCoordinates(latitude, longitude)
-        : "Tidak tersedia";
+      let address = formData.get("address")?.trim();
+        if (!address) {
+          address = latitude && longitude
+            ? await this.fetchAddressFromCoordinates(latitude, longitude)
+            : "Tidak tersedia";
+        }
 
       const currentUser = auth.currentUser;
       if (!currentUser) {
