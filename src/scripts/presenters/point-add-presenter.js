@@ -164,6 +164,7 @@ export class PointAddPresenter {
         }
       } else {
         pointData.submittedBy = currentUserName;
+        pointData.userId = currentUser.uid;
         pointData.createdAt = new Date().toISOString();
 
         await submitPoint(pointData);

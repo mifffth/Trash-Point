@@ -172,6 +172,7 @@ export class PointListView {
     }
       </strong></p>
     <p class="text-gray-700">${point.description}</p>
+    <p class="text-gray-700">Alamat: ${point.address || 'Tidak tersedia'}</p>
     <p class="text-gray-700">Jenis titik: <strong class="uppercase">${
       point.type
     }</strong></p>
@@ -438,6 +439,7 @@ export class PointListView {
       }
       </strong></p>
       <p class="text-gray-700">${point.description}</p>
+      <p class="text-gray-700">Alamat: ${point.address || 'Tidak tersedia'}</p>
       <p class="text-gray-700">Jenis titik: <strong class="uppercase">${
         point.type
       }</strong></p>

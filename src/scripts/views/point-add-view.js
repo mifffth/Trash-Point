@@ -32,6 +32,11 @@ export class PointAddView {
                     required
                     aria-label="Deskripsi Laporan"
                     style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; font-size: 1rem; margin-bottom: 1rem; width: 100%;"></textarea>
+          <label for="address">Alamat:</label>
+          <textarea id="address"
+                    name="address"
+                    aria-label="Alamat Lokasi"
+                    style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; font-size: 1rem; margin-bottom: 1rem; width: 100%;"></textarea>
 
           <div style="margin-bottom: 1rem;">
             <label style="display: block; margin-bottom: 0.5rem;">Tipe Lokasi:</label>
@@ -210,6 +215,7 @@ export class PointAddView {
       button.onclick = () => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
+            
             (position) => {
               const { latitude, longitude } = position.coords;
               map.setView([latitude, longitude], 13);
@@ -242,13 +248,20 @@ export class PointAddView {
       const { lat, lng } = e.latlng;
       document.getElementById("lat").value = lat;
       document.getElementById("lon").value = lng;
-
+    
       if (marker) map.removeLayer(marker);
       marker = L.marker([lat, lng])
         .addTo(map)
         .bindPopup(`Koordinat: ${lat.toFixed(3)}, ${lng.toFixed(3)}`)
         .openPopup();
-    });
+    
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("address").value = data.display_name || '';
+        })
+        .catch(err => console.error("Reverse geocoding failed:", err));
+    });    
 
     const latInput = document.getElementById("lat");
     const lonInput = document.getElementById("lon");
