@@ -115,6 +115,7 @@ export class PointAddPresenter {
       const lon = parseFloat(formData.get("lon"));
 
       const currentUser = auth.currentUser;
+      console.log("currentUser.uid:", currentUser?.uid);
       if (!currentUser) {
         this.view.renderSubmitError(
           "User tidak ditemukan. Silakan login ulang."
