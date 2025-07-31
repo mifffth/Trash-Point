@@ -151,7 +151,7 @@ export class PointAddPresenter {
         await updatePoint(this.pointId, pointData);
         this.view.renderSubmitSuccess("Laporan berhasil diperbarui!");
 
-        if (oldCloudinaryId) {
+        if (oldCloudinaryId) { 
           try {
             await fetch("/.netlify/functions/delete", {
               method: "POST",
