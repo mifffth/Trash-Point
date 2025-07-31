@@ -69,6 +69,19 @@ export class PointAddPresenter {
     });
   }
 
+  async fetchAddressFromCoordinates(lat, lon) {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+      );
+      const data = await response.json();
+      return data.display_name || "Tidak tersedia";
+    } catch (error) {
+      console.error("Reverse geocoding failed:", error);
+      return "Tidak tersedia";
+    }
+  }
+
   async onSubmitPhoto(photo, formData) {
     if (!photo && !this.pointId) {
       this.view.renderSubmitError("Foto wajib diunggah");
@@ -108,14 +121,18 @@ export class PointAddPresenter {
       }
 
       const description = formData.get("description");
-      const address = formData.get("address");
       const type = formData.get("type");
       const status = formData.get("status");
       const lat = parseFloat(formData.get("lat"));
       const lon = parseFloat(formData.get("lon"));
 
+      const latitude = isNaN(lat) ? null : lat;
+      const longitude = isNaN(lon) ? null : lon;
+      const address = latitude && longitude
+        ? await this.fetchAddressFromCoordinates(latitude, longitude)
+        : "Tidak tersedia";
+
       const currentUser = auth.currentUser;
-      console.log("currentUser.uid:", currentUser?.uid);
       if (!currentUser) {
         this.view.renderSubmitError(
           "User tidak ditemukan. Silakan login ulang."
@@ -134,8 +151,8 @@ export class PointAddPresenter {
         description,
         type: type.toLowerCase(),
         status: status.toLowerCase(),
-        latitude: isNaN(lat) ? null : lat,
-        longitude: isNaN(lon) ? null : lon,
+        latitude,
+        longitude,
         address,
       };
 
@@ -146,12 +163,12 @@ export class PointAddPresenter {
 
       if (this.pointId) {
         pointData.updatedAt = new Date().toISOString();
-        pointData.lastEditedBy = currentUserName; 
+        pointData.lastEditedBy = currentUserName;
 
         await updatePoint(this.pointId, pointData);
         this.view.renderSubmitSuccess("Laporan berhasil diperbarui!");
 
-        if (oldCloudinaryId) { 
+        if (oldCloudinaryId) {
           try {
             await fetch("/.netlify/functions/delete", {
               method: "POST",
