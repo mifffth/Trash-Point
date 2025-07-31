@@ -202,6 +202,22 @@ export class PointAddView {
     L.control.layers(baseLayers).addTo(map);
 
     let marker;
+    const fetchAddress = (lat, lng) => {
+      const addressInput = document.getElementById("address");
+      addressInput.value = "Mencari alamat..."; 
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          addressInput.value = data.display_name || "Alamat tidak ditemukan";
+        })
+        .catch((err) => {
+          console.error("Reverse geocoding failed:", err);
+          addressInput.value = "Gagal mengambil alamat";
+        });
+    };
+    // --- PERUBAHAN SELESAI ---
 
     const locateButton = L.control({ position: "topright" });
     locateButton.onAdd = function () {
@@ -229,6 +245,8 @@ export class PointAddView {
                   `Lokasi Anda: ${latitude.toFixed(3)}, ${longitude.toFixed(3)}`
                 )
                 .openPopup();
+              
+              fetchAddress(latitude, longitude);
             },
             (error) => {
               console.error("Geolocation error:", error);
@@ -254,14 +272,7 @@ export class PointAddView {
         .bindPopup(`Koordinat: ${lat.toFixed(3)}, ${lng.toFixed(3)}`)
         .openPopup();
 
-      fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          document.getElementById("address").value = data.display_name || "";
-        })
-        .catch((err) => console.error("Reverse geocoding failed:", err));
+      fetchAddress(lat, lng);
     });
 
     const latInput = document.getElementById("lat");
@@ -277,6 +288,8 @@ export class PointAddView {
           .bindPopup(`Koordinat: ${lat.toFixed(3)}, ${lon.toFixed(3)}`)
           .openPopup();
         map.setView([lat, lon], 13);
+        
+        fetchAddress(lat, lon);
       }
     }
 
