@@ -114,7 +114,7 @@ export class PointAddPresenter {
 
       const latitude = isNaN(lat) ? null : lat;
       const longitude = isNaN(lon) ? null : lon;
-    
+
       const address = formData.get("address")?.trim() || "Tidak tersedia";
 
       const currentUser = auth.currentUser;
@@ -138,7 +138,7 @@ export class PointAddPresenter {
         status: status.toLowerCase(),
         latitude,
         longitude,
-        address: address.toLowerCase(), 
+        address: address.toLowerCase(),
       };
 
       if (secureUrl && publicId) {

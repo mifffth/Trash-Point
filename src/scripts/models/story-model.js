@@ -29,7 +29,7 @@ export async function submitPoint(pointData) {
   try {
     const newPointRef = await addDoc(collection(db, POINTS_COLLECTION_NAME), {
       description: pointData.description,
-      address: pointData.address, 
+      address: pointData.address,
       photoUrl: pointData.photoUrl,
       cloudinaryId: pointData.cloudinaryId,
       type: pointData.type,

@@ -39,11 +39,12 @@ export class PointAddView {
                     style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; font-size: 1rem; margin-bottom: 1rem; width: 100%;"></textarea>
 
           <div style="margin-bottom: 1rem;">
-            <label style="display: block; margin-bottom: 0.5rem;">Tipe Lokasi:</label>
+            <label style="display: block; margin-bottom: 0.5rem;">Tipe titik:</label>
             <label><input type="radio" name="type" value="Bank sampah" required> Bank sampah</label><br>
             <label><input type="radio" name="type" value="TPA"> TPA</label><br>
             <label><input type="radio" name="type" value="Tempat sampah umum"> Tempat sampah umum</label><br>
-            <label><input type="radio" name="type" value="Sumur kompos"> Sumur kompos</label>
+            <label><input type="radio" name="type" value="Sumur kompos"> Sumur kompos</label><br>
+            <label><input type="radio" name="type" value="SPL"> Saluran pembuangan limbah</label>
           </div>
 
           <div style="margin-bottom: 1rem;">
@@ -204,7 +205,7 @@ export class PointAddView {
     let marker;
     const fetchAddress = (lat, lng) => {
       const addressInput = document.getElementById("address");
-      addressInput.value = "Mencari alamat..."; 
+      addressInput.value = "Mencari alamat...";
       fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
       )
@@ -244,7 +245,7 @@ export class PointAddView {
                   `Lokasi Anda: ${latitude.toFixed(3)}, ${longitude.toFixed(3)}`
                 )
                 .openPopup();
-              
+
               fetchAddress(latitude, longitude);
             },
             (error) => {
@@ -287,7 +288,7 @@ export class PointAddView {
           .bindPopup(`Koordinat: ${lat.toFixed(3)}, ${lon.toFixed(3)}`)
           .openPopup();
         map.setView([lat, lon], 13);
-        
+
         fetchAddress(lat, lon);
       }
     }
